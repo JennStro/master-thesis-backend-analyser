@@ -6,7 +6,7 @@ import visitor.BugFinderVisitor;
 public class Main {
 
     public static void main(String[] args) {
-        CompilationUnit compilationUnit = StaticJavaParser.parse("class A { }");
+        CompilationUnit compilationUnit = StaticJavaParser.parse("@NoEqualsMethod class A { }");
         BugFinderVisitor visitor = new BugFinderVisitor();
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
