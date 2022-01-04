@@ -13,6 +13,7 @@ import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
@@ -61,22 +62,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
             if (child instanceof ConstructorDeclaration) {
                 ConstructorDeclaration constructor = (ConstructorDeclaration) child;
-                System.out.println(constructor.getBody());
-
                 for (Statement constructorChild : constructor.getBody().getStatements()) {
-                    if (constructorChild.isExpressionStmt()) {
-                        for (Node expression : constructorChild.getChildNodes()) {
-                            if (expression instanceof AssignExpr) {
-                                for (Node fieldAccessExpressionCandidate : expression.getChildNodes()) {
-                                    if (fieldAccessExpressionCandidate instanceof FieldAccessExpr) {
-                                        FieldAccessExpr fieldAccessExpr = (FieldAccessExpr) fieldAccessExpressionCandidate;
-                                        for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
-                                            if (fieldAccessExpr.getNameAsString().equals(uninitializedFieldDeclaration.getNameAsString())) {
-                                                initializedFieldDeclarations.add(uninitializedFieldDeclaration);
-                                            }
-                                        }
-                                    }
-                                }
+                    if (getFieldAccessExpr(constructorChild).isPresent()) {
+                        FieldAccessExpr fieldAccessExpr = getFieldAccessExpr(constructorChild).get();
+                        for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
+                            if (fieldAccessExpr.getNameAsString().equals(uninitializedFieldDeclaration.getNameAsString())) {
+                                initializedFieldDeclarations.add(uninitializedFieldDeclaration);
                             }
                         }
                     }
@@ -90,6 +81,24 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (!uninitializedFieldDeclarations.isEmpty()) {
             report.addBug(new FieldDeclarationWithoutInitializerError(0,0));
         }
+    }
+
+    private Optional<FieldAccessExpr> getFieldAccessExpr(Statement constructorStatement) {
+        if (constructorStatement.isExpressionStmt()) {
+            for (Node expression : constructorStatement.getChildNodes()) {
+                if (expression instanceof AssignExpr) {
+                    for (Node fieldAccessExpressionCandidate : expression.getChildNodes()) {
+                        if (fieldAccessExpressionCandidate instanceof FieldAccessExpr) {
+                            FieldAccessExpr fieldAccessExpr = (FieldAccessExpr) fieldAccessExpressionCandidate;
+                            return Optional.of(fieldAccessExpr);
+                        } else {
+                            return Optional.empty();
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     /**
