@@ -1,4 +1,4 @@
-import annotations.NoEqualsMethod;
+import master.thesis.backend.annotations.NoEqualsMethod;
 
 @NoEqualsMethod
 public class TestClass {

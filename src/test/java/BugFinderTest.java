@@ -1,10 +1,10 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import errors.BugReport;
-import errors.MissingEqualsMethodError;
+import master.thesis.backend.errors.BugReport;
+import master.thesis.backend.errors.MissingEqualsMethodError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import visitor.BugFinderVisitor;
+import master.thesis.backend.visitor.BugFinderVisitor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
