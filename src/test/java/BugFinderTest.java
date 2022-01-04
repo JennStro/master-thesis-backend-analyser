@@ -111,4 +111,23 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void equalsOperatorOnObject() {
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
+    }
+
+    @Test
+    public void equalsOperatorOnPrimitive() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { System.out.println(a==b); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }

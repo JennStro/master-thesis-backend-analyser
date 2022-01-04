@@ -3,6 +3,7 @@ package master.thesis.backend.visitor;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -23,7 +24,14 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(MethodDeclaration declaration, Void arg) {
          super.visit(declaration, arg);
+    }
 
+    @Override
+    public void visit(BinaryExpr expression, Void arg) {
+        super.visit(expression, arg);
+        if (expression.getOperator().equals(BinaryExpr.Operator.EQUALS)) {
+            report.addBug(new EqualsOperatorError(0,0));
+        }
     }
 
     /**
@@ -102,7 +110,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     }
 
     /**
-     * Check if if-statement has brackets.
+     * Check if if-statement has brackets or a semicolon after statement.
      * @param statement
      * @param arg
      */
