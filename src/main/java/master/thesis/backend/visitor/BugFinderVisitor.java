@@ -5,11 +5,13 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.EmptyStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import master.thesis.backend.errors.BugReport;
 import master.thesis.backend.errors.IfWithoutBracketsError;
 import master.thesis.backend.errors.MissingEqualsMethodError;
+import master.thesis.backend.errors.SemiColonAfterIfError;
 
 import java.util.List;
 
@@ -50,7 +52,15 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         }
     }
 
+    /**
+     * Check if if-statement has brackets.
+     * @param statement
+     * @param arg
+     */
     public void visit(IfStmt statement, Void arg) {
+        if (statement.getThenStmt().getMetaModel().getTypeName().equals("EmptyStmt")) {
+            report.addBug(new SemiColonAfterIfError(0,0));
+        }
         if (!(statement.getThenStmt() instanceof BlockStmt)) {
             report.addBug(new IfWithoutBracketsError(0,0));
         }

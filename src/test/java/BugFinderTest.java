@@ -1,7 +1,9 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import master.thesis.backend.errors.BugReport;
+import master.thesis.backend.errors.IfWithoutBracketsError;
 import master.thesis.backend.errors.MissingEqualsMethodError;
+import master.thesis.backend.errors.SemiColonAfterIfError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import master.thesis.backend.visitor.BugFinderVisitor;
@@ -62,6 +64,26 @@ public class BugFinderTest {
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
+    }
+
+    @Test
+    public void semiAfterIf() {
+        String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof SemiColonAfterIfError);
+    }
+
+    @Test
+    public void noErrorIfStatement() {
+        String code = "@NoEqualsMethod class A { public void method() {if (true) {System.out.println(\"\");} }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
 }
