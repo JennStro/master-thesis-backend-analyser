@@ -20,4 +20,13 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().get(0) instanceof MissingEqualsMethodError);
     }
 
+    @Test
+    public void noEqualsMethodTestWithAnnotation() {
+        String code = "@NoEqualsMethod class A {}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }

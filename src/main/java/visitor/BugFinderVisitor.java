@@ -15,6 +15,7 @@ import java.util.List;
 public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
+    private boolean shouldIgnoreNoEqualsMethodError = false;
 
     @Override
     public void visit(MethodDeclaration declaration, Void arg) {
@@ -36,7 +37,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
-        if (!classHasEqualsMethod) {
+        if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError) {
             report.addBug(new MissingEqualsMethodError(0, 0));
         }
     }
@@ -44,6 +45,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     public void visit(MarkerAnnotationExpr declaration, Void arg) {
         super.visit(declaration, arg);
         System.out.println(declaration.toString());
+        if (declaration.toString().equals("@NoEqualsMethod")) {
+            this.shouldIgnoreNoEqualsMethodError = true;
+        }
     }
 
     public BugReport getReport() {
