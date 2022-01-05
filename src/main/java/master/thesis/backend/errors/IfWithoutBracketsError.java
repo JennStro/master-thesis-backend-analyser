@@ -4,15 +4,15 @@ import java.util.Optional;
 
 public class IfWithoutBracketsError extends BaseError {
 
-    private String ifStatement;
+    private String condition;
     private Object thenBranch;
 
     public IfWithoutBracketsError(int offset, int length) {
         super(offset, length);
     }
 
-    public void setIfStatementWithoutBody(String ifStatement) {
-        this.ifStatement = "if ("+ifStatement + ")";
+    public void setCondition(String condition) {
+        this.condition = condition;
     }
 
     public void setThenBranch(String thenBranch) {
@@ -21,9 +21,9 @@ public class IfWithoutBracketsError extends BaseError {
 
     @Override
     public Optional<String> getSuggestion() {
-        if (this.ifStatement != null && this.thenBranch != null) {
+        if (this.condition != null && this.thenBranch != null) {
             return Optional.of("You should enclose the body in brackets: \n"
-                    + this.ifStatement + " { \n"
+                    + "if ("+ this.condition + ")" + " { \n"
                     + "    " +  this.thenBranch + "\n"
                     + "}");
         }

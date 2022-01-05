@@ -265,4 +265,51 @@ public class BugFinderTest {
                 "a == 0 && b == 0", error.getSuggestion().get());
     }
 
+    @Test
+    public void uninitializedFieldSuggestion() {
+        String code = "@NoEqualsMethod class A { int a; }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
+                " \n" +
+                "public A(int a) { \n" +
+                " \tthis.a = a;\n" +
+                "}", error.getSuggestion().get());
+    }
+
+    @Test
+    public void semiAfterIfSuggestion() {
+        String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try \n" +
+                " \n" +
+                " if (true) {\n" +
+                " \t// ...your code here... \n" +
+                "}", error.getSuggestion().get());
+    }
+
+    @Test
+    public void ifWithoutBlockSuggestion() {
+        String code = "@NoEqualsMethod class A { public void method() {if (true) System.out.println(\"\"); }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should enclose the body in brackets: \n" +
+                "if (true) { \n" +
+                "    System.out.println(\"\");\n" +
+                "}", error.getSuggestion().get());
+    }
+
 }

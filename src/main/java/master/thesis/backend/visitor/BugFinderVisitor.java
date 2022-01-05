@@ -131,8 +131,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             report.addBug(new MissingEqualsMethodError(0, 0));
         }
         uninitializedFieldDeclarations.removeAll(initializedFieldDeclarations);
-        if (!uninitializedFieldDeclarations.isEmpty()) {
-            report.addBug(new FieldDeclarationWithoutInitializerError(0,0));
+        for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
+            FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError(0,0);
+            error.setClass(declaration.getNameAsString());
+            error.setFieldVariableName(uninitializedFieldDeclaration.getNameAsString());
+            error.setFieldVariableType(uninitializedFieldDeclaration.getType().asString());
+            report.addBug(error);
         }
     }
 
@@ -161,11 +165,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
      */
     public void visit(IfStmt statement, Void arg) {
         super.visit(statement, arg);
-        if (statement.getThenStmt().getMetaModel().getTypeName().equals("EmptyStmt")) {
-            report.addBug(new SemiColonAfterIfError(0,0));
+        Statement thenStatement = statement.getThenStmt();
+        boolean thenStatementIsEmpty = thenStatement.getMetaModel().getTypeName().equals("EmptyStmt");
+        boolean thenStatementHasCurlyBraces = thenStatement instanceof BlockStmt;
+        if (thenStatementIsEmpty) {
+            SemiColonAfterIfError error = new SemiColonAfterIfError(0,0);
+            error.setCondition(statement.getCondition().toString());
+            report.addBug(error);
         }
-        if (!(statement.getThenStmt() instanceof BlockStmt)) {
-            report.addBug(new IfWithoutBracketsError(0,0));
+        if (!thenStatementHasCurlyBraces) {
+            IfWithoutBracketsError error = new IfWithoutBracketsError(0,0);
+            error.setCondition(statement.getCondition().toString());
+            error.setThenBranch(statement.getThenStmt().toString());
+            report.addBug(error);
         }
     }
 
