@@ -4,28 +4,23 @@ import java.util.ArrayList;
 
 public class BugReport {
 
-    private int numberOfBugs;
     private ArrayList<BaseError> bugs = new ArrayList<>();
-    private String fileName;
+    private String className;
 
     public int getNumberOfBugs() {
-        return numberOfBugs;
+        return bugs.size();
     }
 
     public ArrayList<BaseError> getBugs() {
         return bugs;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getClassName() {
+        return className;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public void setNumberOfBugs(int numberOfBugs) {
-        this.numberOfBugs = numberOfBugs;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public void addBug(BaseError error) {

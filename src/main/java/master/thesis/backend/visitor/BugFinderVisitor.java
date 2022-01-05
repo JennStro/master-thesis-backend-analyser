@@ -96,7 +96,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(ClassOrInterfaceDeclaration declaration, Void arg) {
         super.visit(declaration, arg);
-        report.setFileName(declaration.getNameAsString());
+        report.setClassName(declaration.getNameAsString());
         List<Node> children = declaration.getChildNodes();
         boolean classHasEqualsMethod = false;
 
