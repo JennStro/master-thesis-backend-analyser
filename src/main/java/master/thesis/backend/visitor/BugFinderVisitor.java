@@ -2,10 +2,7 @@ package master.thesis.backend.visitor;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -22,12 +19,26 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private boolean shouldIgnoreNoEqualsMethodError = false;
 
     @Override
-    public void visit(MethodDeclaration declaration, Void arg) {
-         super.visit(declaration, arg);
+    public void visit(MethodCallExpr expression, Void arg) {
+        super.visit(expression, arg);
+        System.out.println(expression);
+        System.out.println(expression.resolve().getReturnType());
+        if (!expression.resolve().getReturnType().isVoid()) {
+            if (expression.getParentNode().isPresent()) {
+                if (expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt")) {
+                    report.addBug(new IgnoringReturnError(0, 0));
+                }
+            } else {
+                report.addBug(new IgnoringReturnError(0, 0));
+            }
+        }
     }
 
     /**
      * Check that objects is not compared with the equals operator.
+     *
+     * Check that binary operator are not used on booleans.
+     *
      * @param expression
      * @param arg
      */
@@ -39,9 +50,10 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 report.addBug(new EqualsOperatorError(0, 0));
             }
         }
-        System.out.println(expression);
         if (expression.getOperator().equals(BinaryExpr.Operator.BINARY_OR) || expression.getOperator().equals(BinaryExpr.Operator.BINARY_AND)) {
-            report.addBug(new BitwiseOperatorError(0,0));
+            if (expression.getLeft().calculateResolvedType().describe().equals("boolean") && expression.getRight().calculateResolvedType().describe().equals("boolean")) {
+                report.addBug(new BitwiseOperatorError(0, 0));
+            }
         }
     }
 
