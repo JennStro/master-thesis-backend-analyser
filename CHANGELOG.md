@@ -1,4 +1,5 @@
 ### 🔥 1.0.0 
+New feature: Add suggestions for errors.  
 Breaking change: Now use `Optional` instead of null-check to get suggestion from an error. 
 
 Old code:   
