@@ -18,15 +18,23 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private BugReport report = new BugReport();
     private boolean shouldIgnoreNoEqualsMethodError = false;
 
+    /**
+     * Fin methodcalls that have ignored return value.
+     *
+     * @param expression
+     * @param arg
+     */
     @Override
     public void visit(MethodCallExpr expression, Void arg) {
         super.visit(expression, arg);
-        System.out.println(expression);
-        System.out.println(expression.resolve().getReturnType());
         if (!expression.resolve().getReturnType().isVoid()) {
             if (expression.getParentNode().isPresent()) {
-                if (expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt")) {
-                    report.addBug(new IgnoringReturnError(0, 0));
+                boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
+                if (methodCallIsNotUsed) {
+                    IgnoringReturnError error = new IgnoringReturnError(0, 0);
+                    error.setReturnType(expression.resolve().getReturnType().describe());
+                    error.setMethodCall(expression.toString());
+                    report.addBug(error);
                 }
             } else {
                 report.addBug(new IgnoringReturnError(0, 0));
@@ -45,9 +53,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(BinaryExpr expression, Void arg) {
         super.visit(expression, arg);
-        if (expression.getOperator().equals(BinaryExpr.Operator.EQUALS) || expression.getOperator().equals(BinaryExpr.Operator.NOT_EQUALS)) {
-            if(!(expression.getLeft().calculateResolvedType().isPrimitive() && expression.getRight().calculateResolvedType().isPrimitive())) {
-                report.addBug(new EqualsOperatorError(0, 0));
+        BinaryExpr.Operator operator = expression.getOperator();
+        if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+            Expression left = expression.getLeft();
+            Expression right = expression.getRight();
+            boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
+            if (expressionsAreNotPrimitive) {
+                EqualsOperatorError error = new EqualsOperatorError(0, 0);
+                error.setObjectOne(left.toString());
+                error.setObjectTwo(right.toString());
+                if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+                    error.withNegatedOperator();
+                }
+                report.addBug(error);
             }
         }
         if (expression.getOperator().equals(BinaryExpr.Operator.BINARY_OR) || expression.getOperator().equals(BinaryExpr.Operator.BINARY_AND)) {

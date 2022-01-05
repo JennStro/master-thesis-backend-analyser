@@ -199,4 +199,42 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void ignoringReturnSuggestion() {
+        String code = "@NoEqualsMethod class A { public String method(String a) { a.toLowerCase(); return a;} }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try \n" +
+                "\n" +
+                "java.lang.String variableName = a.toLowerCase();", error.getSuggestion().get());
+    }
+
+    @Test
+    public void equalsOperatorSuggestion() {
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try a.equals(b)", error.getSuggestion().get());
+    }
+
+    @Test
+    public void notEqualsOperatorSuggestion() {
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a!=b); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try !a.equals(b)", error.getSuggestion().get());
+    }
+
 }
