@@ -54,9 +54,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     public void visit(BinaryExpr expression, Void arg) {
         super.visit(expression, arg);
         BinaryExpr.Operator operator = expression.getOperator();
+        Expression left = expression.getLeft();
+        Expression right = expression.getRight();
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-            Expression left = expression.getLeft();
-            Expression right = expression.getRight();
             boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
             if (expressionsAreNotPrimitive) {
                 EqualsOperatorError error = new EqualsOperatorError(0, 0);
@@ -68,9 +68,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 report.addBug(error);
             }
         }
-        if (expression.getOperator().equals(BinaryExpr.Operator.BINARY_OR) || expression.getOperator().equals(BinaryExpr.Operator.BINARY_AND)) {
-            if (expression.getLeft().calculateResolvedType().describe().equals("boolean") && expression.getRight().calculateResolvedType().describe().equals("boolean")) {
-                report.addBug(new BitwiseOperatorError(0, 0));
+        if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
+            if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
+                BitwiseOperatorError error = new BitwiseOperatorError(0,0);
+                error.setLeftOperand(left.toString());
+                error.setRightOperand(right.toString());
+                error.setOperator(operator.asString());
+                report.addBug(error);
             }
         }
     }

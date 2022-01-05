@@ -237,4 +237,32 @@ public class BugFinderTest {
         Assertions.assertEquals("You should try !a.equals(b)", error.getSuggestion().get());
     }
 
+    @Test
+    public void bitwiseOperatorSuggestion() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 | b==0) {} } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try: \n" +
+                " \n" +
+                "a == 0 || b == 0", error.getSuggestion().get());
+    }
+
+    @Test
+    public void bitwiseAndOperatorSuggestion() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 & b==0) {} } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try: \n" +
+                " \n" +
+                "a == 0 && b == 0", error.getSuggestion().get());
+    }
+
 }
