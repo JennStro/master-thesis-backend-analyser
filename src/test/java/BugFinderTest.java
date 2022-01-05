@@ -1,7 +1,11 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.errors.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import master.thesis.backend.visitor.BugFinderVisitor;
 
@@ -11,6 +15,13 @@ import java.io.FileNotFoundException;
 public class BugFinderTest {
 
     private BugFinderVisitor visitor = new BugFinderVisitor();
+
+    @BeforeAll
+    static void setUp() {
+        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+        combinedTypeSolver.add(new ReflectionTypeSolver());
+        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
+    }
 
     @Test
     public void noEqualsMethodTest() {
@@ -114,6 +125,16 @@ public class BugFinderTest {
     @Test
     public void equalsOperatorOnObject() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
+    }
+
+    @Test
+    public void notEqualsOperatorOnObject() {
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a!=b); } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();

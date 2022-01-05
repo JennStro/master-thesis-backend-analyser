@@ -29,8 +29,10 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(BinaryExpr expression, Void arg) {
         super.visit(expression, arg);
-        if (expression.getOperator().equals(BinaryExpr.Operator.EQUALS)) {
-            report.addBug(new EqualsOperatorError(0,0));
+        if (expression.getOperator().equals(BinaryExpr.Operator.EQUALS) || expression.getOperator().equals(BinaryExpr.Operator.NOT_EQUALS)) {
+            if(!(expression.getLeft().calculateResolvedType().isPrimitive() && expression.getRight().calculateResolvedType().isPrimitive())) {
+                report.addBug(new EqualsOperatorError(0, 0));
+            }
         }
     }
 
