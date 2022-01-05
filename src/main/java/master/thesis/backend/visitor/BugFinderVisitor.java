@@ -26,6 +26,11 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
          super.visit(declaration, arg);
     }
 
+    /**
+     * Check that objects is not compared with the equals operator.
+     * @param expression
+     * @param arg
+     */
     @Override
     public void visit(BinaryExpr expression, Void arg) {
         super.visit(expression, arg);
@@ -33,6 +38,10 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if(!(expression.getLeft().calculateResolvedType().isPrimitive() && expression.getRight().calculateResolvedType().isPrimitive())) {
                 report.addBug(new EqualsOperatorError(0, 0));
             }
+        }
+        System.out.println(expression);
+        if (expression.getOperator().equals(BinaryExpr.Operator.BINARY_OR) || expression.getOperator().equals(BinaryExpr.Operator.BINARY_AND)) {
+            report.addBug(new BitwiseOperatorError(0,0));
         }
     }
 
@@ -117,6 +126,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
      * @param arg
      */
     public void visit(IfStmt statement, Void arg) {
+        super.visit(statement, arg);
         if (statement.getThenStmt().getMetaModel().getTypeName().equals("EmptyStmt")) {
             report.addBug(new SemiColonAfterIfError(0,0));
         }
