@@ -7,6 +7,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private boolean shouldIgnoreNoEqualsMethodError = false;
 
     /**
-     * Fin methodcalls that have ignored return value.
+     * Find methodcalls that have ignored return value.
      *
      * @param expression
      * @param arg
@@ -27,19 +28,23 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(MethodCallExpr expression, Void arg) {
         super.visit(expression, arg);
-        if (!expression.resolve().getReturnType().isVoid()) {
-            if (expression.getParentNode().isPresent()) {
-                boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
-                if (methodCallIsNotUsed) {
-                    IgnoringReturnError error = new IgnoringReturnError(0, 0);
-                    error.setReturnType(expression.resolve().getReturnType().describe());
-                    error.setMethodCall(expression.toString());
-                    report.addBug(error);
+        try {
+            expression.resolve();
+            if (!expression.resolve().getReturnType().isVoid()) {
+                if (expression.getParentNode().isPresent()) {
+                    boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
+                    if (methodCallIsNotUsed) {
+                        IgnoringReturnError error = new IgnoringReturnError(0, 0);
+                        error.setReturnType(expression.resolve().getReturnType().describe());
+                        error.setMethodCall(expression.toString());
+                        report.addBug(error);
+                    }
+                } else {
+                    report.addBug(new IgnoringReturnError(0, 0));
                 }
-            } else {
-                report.addBug(new IgnoringReturnError(0, 0));
             }
-        }
+        } catch (UnsolvedSymbolException ignored) {}
+
     }
 
     /**
