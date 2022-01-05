@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public class BitwiseOperatorError extends BaseError {
 
     private String leftOperand;
@@ -11,8 +13,11 @@ public class BitwiseOperatorError extends BaseError {
     }
 
     @Override
-    public String getSuggestion() {
-        return "You should try: \n \n" + this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand;
+    public Optional<String> getSuggestion() {
+        if (this.leftOperand != null && this.operator != null && this.rightOperand != null) {
+            return Optional.of("You should try: \n \n" + this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand);
+        }
+        return Optional.empty();
     }
 
     public void setLeftOperand(String leftOperand) {
@@ -27,10 +32,6 @@ public class BitwiseOperatorError extends BaseError {
         this.rightOperand = rightOperand;
     }
 
-    @Override
-    public boolean hasSuggestion() {
-        return this.leftOperand != null && this.operator != null && this.rightOperand != null;
-    }
     @Override
     public String getWhat() {
         return "You are using the bitwiseoperator (& or |) as a logical operator.";

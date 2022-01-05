@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public class SemiColonAfterIfError extends BaseError {
 
 
@@ -13,13 +15,12 @@ public class SemiColonAfterIfError extends BaseError {
         this.condition = condition;
     }
 
-    public String getSuggestion() {
-        return "You should try \n \n if (" + this.condition + ") {\n 	// ...your code here... \n}";
-    }
-
     @Override
-    public boolean hasSuggestion() {
-        return this.condition != null;
+    public Optional<String> getSuggestion() {
+        if (this.condition != null) {
+            return Optional.of("You should try \n \n if (" + this.condition + ") {\n 	// ...your code here... \n}");
+        }
+        return Optional.empty();
     }
 
     @Override

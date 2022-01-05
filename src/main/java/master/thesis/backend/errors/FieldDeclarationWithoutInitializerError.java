@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public class FieldDeclarationWithoutInitializerError extends BaseError {
 
     private String type;
@@ -23,18 +25,14 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
     }
 
     @Override
-    public boolean hasSuggestion() {
-        return this.className != null &&
-                this.name != null &&
-                this.type != null;
-    }
-
-    @Override
-    public String getSuggestion() {
-        return "You could initialize the fieldvariable in the constructor: \n \n"
-                + "public " + this.className + "(" + this.type + " " + this.name + ") { \n "
-                + "	this." + this.name + " = " + this.name + ";\n"
-                + "}";
+    public Optional<String> getSuggestion() {
+        if (this.className != null && this.name != null && this.type != null) {
+           return Optional.of("You could initialize the fieldvariable in the constructor: \n \n"
+                    + "public " + this.className + "(" + this.type + " " + this.name + ") { \n "
+                    + "	this." + this.name + " = " + this.name + ";\n"
+                    + "}");
+        }
+        return Optional.empty();
     }
 
     @Override

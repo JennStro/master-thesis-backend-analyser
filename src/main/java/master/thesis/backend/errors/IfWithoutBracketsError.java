@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public class IfWithoutBracketsError extends BaseError {
 
     private String ifStatement;
@@ -18,16 +20,14 @@ public class IfWithoutBracketsError extends BaseError {
     }
 
     @Override
-    public boolean hasSuggestion() {
-        return this.ifStatement != null && this.thenBranch != null; }
-
-    @Override
-    public String getSuggestion() {
-        return "You should enclose the body in brackets: \n"
-                + this.ifStatement + " { \n"
-                + "    " +  this.thenBranch + "\n"
-                + "}"
-                ;
+    public Optional<String> getSuggestion() {
+        if (this.ifStatement != null && this.thenBranch != null) {
+            return Optional.of("You should enclose the body in brackets: \n"
+                    + this.ifStatement + " { \n"
+                    + "    " +  this.thenBranch + "\n"
+                    + "}");
+        }
+        return Optional.empty();
     }
 
     @Override

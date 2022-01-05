@@ -1,6 +1,8 @@
 package master.thesis.backend.errors;
 
 
+import java.util.Optional;
+
 public class IgnoringReturnError extends BaseError {
 
     private String returnType;
@@ -10,8 +12,11 @@ public class IgnoringReturnError extends BaseError {
         super(offset, length);
     }
     @Override
-    public String getSuggestion() {
-        return "You should try \n\n" + this.returnType + " variableName = " + this.methodCall + ";";
+    public Optional<String> getSuggestion() {
+        if (this.returnType != null && this.methodCall != null) {
+            return Optional.of("You should try \n\n" + this.returnType + " variableName = " + this.methodCall + ";");
+        }
+        return Optional.empty();
     }
 
     public void setReturnType(String returnType) {
@@ -20,11 +25,6 @@ public class IgnoringReturnError extends BaseError {
 
     public void setMethodCall(String methodCall) {
         this.methodCall = methodCall;
-    }
-
-    @Override
-    public boolean hasSuggestion() {
-        return this.returnType != null && this.methodCall != null;
     }
 
     @Override

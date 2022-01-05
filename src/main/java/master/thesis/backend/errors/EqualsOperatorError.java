@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public class EqualsOperatorError extends BaseError {
 
     private String objectOne;
@@ -9,8 +11,12 @@ public class EqualsOperatorError extends BaseError {
         super(offset, length);
     }
 
-    public String getSuggestion() {
-        return "You should try " + this.objectOne + ".equals(" + this.objectTwo + ")";
+    @Override
+    public Optional<String> getSuggestion() {
+        if (this.objectOne != null && this.objectTwo != null) {
+            return Optional.of("You should try " + this.objectOne + ".equals(" + this.objectTwo + ")");
+        }
+        return Optional.empty();
     }
 
     public void setObjectOne(String objectOne) {
@@ -19,11 +25,6 @@ public class EqualsOperatorError extends BaseError {
 
     public void setObjectTwo(String objectTwo) {
         this.objectTwo = objectTwo;
-    }
-
-    @Override
-    public boolean hasSuggestion() {
-        return this.objectOne != null && this.objectTwo != null;
     }
 
     @Override

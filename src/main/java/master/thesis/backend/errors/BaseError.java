@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import java.util.Optional;
+
 public abstract class BaseError {
 
     private final int offset;
@@ -20,17 +22,9 @@ public abstract class BaseError {
 
     /**
      *
-     * @return True if this error has a suggestion available.
-     */
-    public abstract boolean hasSuggestion();
-
-    /**
-     *
      * @return A string with a suggestion on how to fix this error.
-     *
-     * Check {@link #hasSuggestion()} first.
      */
-    public abstract String getSuggestion();
+    public abstract Optional<String> getSuggestion();
 
     /**
      *
