@@ -73,8 +73,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
 
             try {
-                boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
-                if (expressionsAreNotPrimitive) {
+                boolean expressionsArePrimitiveOrNull =
+                        left.calculateResolvedType().isPrimitive()
+                        || right.calculateResolvedType().isPrimitive()
+                        || left.calculateResolvedType().isNull()
+                        || right.calculateResolvedType().isNull();
+                if (!expressionsArePrimitiveOrNull) {
                     int lineNumber = -1;
                     if (expression.getRange().isPresent()) {
                         lineNumber = expression.getRange().get().begin.line;

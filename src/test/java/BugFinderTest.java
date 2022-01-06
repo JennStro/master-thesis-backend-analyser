@@ -161,6 +161,15 @@ public class BugFinderTest {
     }
 
     @Test
+    public void equalsOperatorOnNull() {
+        String code = "@NoEqualsMethod class A { public A(Object a) { if (a == null) {} } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
     public void bitwiseAndOperator() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 & b==0) {} } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
