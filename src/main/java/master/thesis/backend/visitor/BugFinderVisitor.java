@@ -7,7 +7,9 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.Resolvable;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.types.ResolvedType;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
@@ -43,7 +45,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     report.addBug(new IgnoringReturnError(0, 0));
                 }
             }
-        } catch (UnsolvedSymbolException ignored) {}
+        } catch (UnsolvedSymbolException ignore) {
+            //When a methodcall is unresolved, we can not find the returntype, so we can not check if it returns void.
+        }
 
     }
 
@@ -62,25 +66,46 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Expression left = expression.getLeft();
         Expression right = expression.getRight();
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-            boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
-            if (expressionsAreNotPrimitive) {
-                EqualsOperatorError error = new EqualsOperatorError(0, 0);
-                error.setObjectOne(left.toString());
-                error.setObjectTwo(right.toString());
-                if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                    error.withNegatedOperator();
+
+            try {
+                boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
+                if (expressionsAreNotPrimitive) {
+                    EqualsOperatorError error = new EqualsOperatorError(0, 0);
+                    error.setObjectOne(left.toString());
+                    error.setObjectTwo(right.toString());
+                    if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+                        error.withNegatedOperator();
+                    }
+                    report.addBug(error);
                 }
-                report.addBug(error);
+            } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                // When a type is not resolved, it in not a primitive. But an object may be called upon, which can
+                // result in a primitive. So we need to check that it is only the object.
+                boolean leftIsObjectReference = left.isNameExpr();
+                boolean rightIsObjectReference = right.isNameExpr();
+                if (leftIsObjectReference && rightIsObjectReference) {
+                    EqualsOperatorError error = new EqualsOperatorError(0, 0);
+                    error.setObjectOne(left.toString());
+                    error.setObjectTwo(right.toString());
+                    if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+                        error.withNegatedOperator();
+                    }
+                    report.addBug(error);
+                }
             }
+
+
         }
         if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
-            if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
-                BitwiseOperatorError error = new BitwiseOperatorError(0,0);
-                error.setLeftOperand(left.toString());
-                error.setRightOperand(right.toString());
-                error.setOperator(operator.asString());
-                report.addBug(error);
-            }
+            try {
+                if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
+                    BitwiseOperatorError error = new BitwiseOperatorError(0, 0);
+                    error.setLeftOperand(left.toString());
+                    error.setRightOperand(right.toString());
+                    error.setOperator(operator.asString());
+                    report.addBug(error);
+                }
+            } catch (UnsolvedSymbolException ignore) {}
         }
     }
 

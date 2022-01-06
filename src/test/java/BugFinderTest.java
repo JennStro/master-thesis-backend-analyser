@@ -321,4 +321,50 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    /**
+     * When a methodcall is unresolved, we can not find the returntype, so we can not check
+     * if it returns void.
+     */
+    @Test
+    public void unresolvedMethodCallExceptionWithError() {
+        String code = "@NoEqualsMethod class A { public String method() { Bar b = new Bar(); b.toString(); return b; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void resolvedMethodCallExceptionWithError() {
+        String code = "@NoEqualsMethod class A { @NoEqualsMethod class Bar {  } public String method() { Bar b = new Bar(); b.toString(); return b; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try \n" +
+                "\n" +
+                "java.lang.String variableName = b.toString();", error.getSuggestion().get());
+    }
+
+    @Test
+    public void unresolvedVariableExceptionEqualsOperator() {
+        String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b==b1) {return b.toString();} } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("You should try b.equals(b1)", error.getSuggestion().get());
+    }
+
+    @Test
+    public void unresolvedVariableExceptionEqualsOperatorNoError() {
+        String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b.getNumber() ==b1.getNumber()) {return b.toString();} } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }
