@@ -123,6 +123,15 @@ public class BugFinderTest {
     }
 
     @Test
+    public void fieldNoDeclarationIgnored() {
+        String code = "@NoEqualsMethod class A { @NoInitialization int a; }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
     public void equalsOperatorOnObject() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
@@ -383,6 +392,49 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals(5, error.getLineNumber());
+    }
+
+    @Test
+    public void noEqualsMethodTestWithAnnotationTestClassWithInnerClass() {
+        String path = "src/test/java/FirstTestClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("InnerClass", error.getContainingClass());
+        Assertions.assertEquals("You should add the method \n" +
+                " \n" +
+                " @Override \n" +
+                "public boolean equals(Object o) { \n" +
+                "   //... Your implementation here... \n" +
+                "}", error.getSuggestion().get());
+    }
+
+    @Test
+    public void noInitInnerClass() {
+        String path = "src/test/java/SecondTestClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("InnerClass", error.getContainingClass());
+        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
+                " \n" +
+                "public InnerClass(int number) { \n" +
+                " \tthis.number = number;\n" +
+                "}", error.getSuggestion().get());
     }
 
 }

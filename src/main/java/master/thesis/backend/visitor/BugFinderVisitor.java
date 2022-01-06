@@ -143,11 +143,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         report.setClassName(declaration.getNameAsString());
         List<Node> children = declaration.getChildNodes();
         boolean classHasEqualsMethod = false;
+        System.out.println(children);
 
         ArrayList<VariableDeclarator> uninitializedFieldDeclarations = new ArrayList<>();
         ArrayList<VariableDeclarator> initializedFieldDeclarations = new ArrayList<>();
 
         for (Node child : children) {
+
             if (child instanceof MethodDeclaration) {
                 MethodDeclaration equalsMethodCandidate = (MethodDeclaration) child;
                 if (equalsMethodCandidate.getNameAsString().equals("equals")) {
@@ -158,7 +160,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 FieldDeclaration field = (FieldDeclaration) child;
                 for (VariableDeclarator varDecl : field.getVariables()) {
                     if (varDecl.getInitializer().isEmpty()) {
-                        uninitializedFieldDeclarations.add(varDecl);
+                        if (!field.toString().contains("@NoInitialization")) {
+                            uninitializedFieldDeclarations.add(varDecl);
+                        }
                     }
                 }
             }
@@ -177,7 +181,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
         }
         if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError) {
-            report.addBug(new MissingEqualsMethodError());
+            MissingEqualsMethodError error = new MissingEqualsMethodError();
+            error.setContainingClass(declaration.getNameAsString());
+            report.addBug(error);
         }
         uninitializedFieldDeclarations.removeAll(initializedFieldDeclarations);
         for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
@@ -187,7 +193,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
             FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError();
             error.setLineNumber(lineNumber);
-            error.setClass(declaration.getNameAsString());
+            error.setContainingClass(declaration.getNameAsString());
             error.setFieldVariableName(uninitializedFieldDeclaration.getNameAsString());
             error.setFieldVariableType(uninitializedFieldDeclaration.getType().asString());
             report.addBug(error);

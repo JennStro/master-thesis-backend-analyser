@@ -5,15 +5,10 @@ import java.util.Optional;
 public class FieldDeclarationWithoutInitializerError extends BaseError {
 
     private String type;
-    private String className;
     private String name;
 
     public void setFieldVariableType(String type) {
         this.type = type;
-    }
-
-    public void setClass(String className) {
-        this.className = className;
     }
 
     public void setFieldVariableName(String name) {
@@ -22,9 +17,9 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
 
     @Override
     public Optional<String> getSuggestion() {
-        if (this.className != null && this.name != null && this.type != null) {
+        if (this.containingClass != null && this.name != null && this.type != null) {
            return Optional.of("You could initialize the fieldvariable in the constructor: \n \n"
-                    + "public " + this.className + "(" + this.type + " " + this.name + ") { \n "
+                    + "public " + this.containingClass + "(" + this.type + " " + this.name + ") { \n "
                     + "	this." + this.name + " = " + this.name + ";\n"
                     + "}");
         }

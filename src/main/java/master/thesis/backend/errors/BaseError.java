@@ -7,6 +7,7 @@ public abstract class BaseError {
     private int offsetStart = -1;
     private int offsetEnd = -1;
     private int lineNumber = -1;
+    protected String containingClass = "";
 
     public int getOffset() {
         return this.offsetStart;
@@ -14,6 +15,18 @@ public abstract class BaseError {
 
     public int getLength() {
         return this.offsetEnd;
+    }
+
+    /**
+     *
+     * @return the name of the class this error is found in
+     */
+    public String getContainingClass() {
+        return containingClass;
+    }
+
+    public void setContainingClass(String containingClass) {
+        this.containingClass = containingClass;
     }
 
     /**
