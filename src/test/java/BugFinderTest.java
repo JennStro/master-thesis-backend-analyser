@@ -435,6 +435,7 @@ public class BugFinderTest {
                 "public InnerClass(int number) { \n" +
                 " \tthis.number = number;\n" +
                 "}", error.getSuggestion().get());
+        Assertions.assertEquals(9, error.getLineNumber());
     }
 
     @Test
@@ -463,6 +464,31 @@ public class BugFinderTest {
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("IgnoreEqualsOnlyInnerClass", error.getContainingClass());
+        Assertions.assertEquals("You should add the method \n" +
+                " \n" +
+                " @Override \n" +
+                "public boolean equals(Object o) { \n" +
+                "   //... Your implementation here... \n" +
+                "}", error.getSuggestion().get());
+    }
+
+    @Test
+    public void useEqualsOperatorClass() {
+        String path = "src/test/java/EqualsOperatorClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("EqualsOperatorClass", error.getContainingClass());
+        Assertions.assertEquals("You should try i.equals(i2)", error.getSuggestion().get());
     }
 
 }

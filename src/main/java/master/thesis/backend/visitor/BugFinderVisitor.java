@@ -38,6 +38,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                             lineNumber = expression.getRange().get().begin.line;
                         }
                         IgnoringReturnError error = new IgnoringReturnError();
+                        if (getContainingClass(expression).isPresent()) {
+                            error.setContainingClass(getContainingClass(expression).get());
+                        }
                         error.setLineNumber(lineNumber);
                         error.setReturnType(expression.resolve().getReturnType().describe());
                         error.setMethodCall(expression.toString());
@@ -77,6 +80,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         lineNumber = expression.getRange().get().begin.line;
                     }
                     EqualsOperatorError error = new EqualsOperatorError();
+                    if (getContainingClass(expression).isPresent()) {
+                        error.setContainingClass(getContainingClass(expression).get());
+                    }
                     error.setLineNumber(lineNumber);
                     error.setObjectOne(left.toString());
                     error.setObjectTwo(right.toString());
@@ -96,6 +102,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         lineNumber = expression.getRange().get().begin.line;
                     }
                     EqualsOperatorError error = new EqualsOperatorError();
+                    if (getContainingClass(expression).isPresent()) {
+                        error.setContainingClass(getContainingClass(expression).get());
+                    }
                     error.setLineNumber(lineNumber);
                     error.setObjectOne(left.toString());
                     error.setObjectTwo(right.toString());
@@ -116,6 +125,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         lineNumber = expression.getRange().get().begin.line;
                     }
                     BitwiseOperatorError error = new BitwiseOperatorError();
+                    if (getContainingClass(expression).isPresent()) {
+                        error.setContainingClass(getContainingClass(expression).get());
+                    }
                     error.setLineNumber(lineNumber);
                     error.setLeftOperand(left.toString());
                     error.setRightOperand(right.toString());
@@ -192,8 +204,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         uninitializedFieldDeclarations.removeAll(initializedFieldDeclarations);
         for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
             int lineNumber = -1;
-            if (declaration.getRange().isPresent()) {
-                lineNumber = declaration.getRange().get().begin.line;
+            if (uninitializedFieldDeclaration.getRange().isPresent()) {
+                lineNumber = uninitializedFieldDeclaration.getRange().get().begin.line;
             }
             FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError();
             error.setLineNumber(lineNumber);
@@ -239,6 +251,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 lineNumber = statement.getRange().get().begin.line;
             }
             SemiColonAfterIfError error = new SemiColonAfterIfError();
+            if (getContainingClass(statement).isPresent()) {
+                error.setContainingClass(getContainingClass(statement).get());
+            }
             error.setLineNumber(lineNumber);
             error.setCondition(statement.getCondition().toString());
             report.addBug(error);
@@ -249,11 +264,23 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 lineNumber = statement.getRange().get().begin.line;
             }
             IfWithoutBracketsError error = new IfWithoutBracketsError();
+            if (getContainingClass(statement).isPresent()) {
+                error.setContainingClass(getContainingClass(statement).get());
+            }
             error.setLineNumber(lineNumber);
             error.setCondition(statement.getCondition().toString());
             error.setThenBranch(statement.getThenStmt().toString());
             report.addBug(error);
         }
+    }
+
+    private Optional<String> getContainingClass(Node node) {
+        Optional<ClassOrInterfaceDeclaration> maybeContainingClass = node.findAncestor(ClassOrInterfaceDeclaration.class);
+        if (maybeContainingClass.isPresent()) {
+            ClassOrInterfaceDeclaration clazz = maybeContainingClass.get();
+            return Optional.of(clazz.getNameAsString());
+        }
+        return Optional.empty();
     }
 
     public BugReport getReport() {
