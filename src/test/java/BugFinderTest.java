@@ -367,4 +367,22 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void lineNumber() {
+        String code = "@NoEqualsMethod class A { \n" +
+                "   @NoEqualsMethod class Bar {  } \n" +
+                "   public String method() { \n" +
+                "       Bar b = new Bar(); \n" +
+                "       b.toString(); \n" +
+                "       return b; " +
+                "   } " +
+                "}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals(5, error.getLineNumber());
+    }
+
 }

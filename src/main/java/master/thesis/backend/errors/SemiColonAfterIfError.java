@@ -7,10 +7,6 @@ public class SemiColonAfterIfError extends BaseError {
 
     private String condition;
 
-    public SemiColonAfterIfError(int offset, int length) {
-        super(offset, length);
-    }
-
     public void setCondition(String condition) {
         this.condition = condition;
     }

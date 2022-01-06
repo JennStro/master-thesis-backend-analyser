@@ -1,5 +1,6 @@
 package master.thesis.backend.visitor;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
@@ -34,13 +35,18 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 if (expression.getParentNode().isPresent()) {
                     boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
                     if (methodCallIsNotUsed) {
-                        IgnoringReturnError error = new IgnoringReturnError(0, 0);
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        IgnoringReturnError error = new IgnoringReturnError();
+                        error.setLineNumber(lineNumber);
                         error.setReturnType(expression.resolve().getReturnType().describe());
                         error.setMethodCall(expression.toString());
                         report.addBug(error);
                     }
                 } else {
-                    report.addBug(new IgnoringReturnError(0, 0));
+                    report.addBug(new IgnoringReturnError());
                 }
             }
         } catch (UnsolvedSymbolException ignore) {
@@ -68,7 +74,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             try {
                 boolean expressionsAreNotPrimitive = !(left.calculateResolvedType().isPrimitive() && right.calculateResolvedType().isPrimitive());
                 if (expressionsAreNotPrimitive) {
-                    EqualsOperatorError error = new EqualsOperatorError(0, 0);
+                    int lineNumber = -1;
+                    if (expression.getRange().isPresent()) {
+                        lineNumber = expression.getRange().get().begin.line;
+                    }
+                    EqualsOperatorError error = new EqualsOperatorError();
+                    error.setLineNumber(lineNumber);
                     error.setObjectOne(left.toString());
                     error.setObjectTwo(right.toString());
                     if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
@@ -82,7 +93,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 boolean leftIsObjectReference = left.isNameExpr();
                 boolean rightIsObjectReference = right.isNameExpr();
                 if (leftIsObjectReference && rightIsObjectReference) {
-                    EqualsOperatorError error = new EqualsOperatorError(0, 0);
+                    int lineNumber = -1;
+                    if (expression.getRange().isPresent()) {
+                        lineNumber = expression.getRange().get().begin.line;
+                    }
+                    EqualsOperatorError error = new EqualsOperatorError();
+                    error.setLineNumber(lineNumber);
                     error.setObjectOne(left.toString());
                     error.setObjectTwo(right.toString());
                     if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
@@ -97,7 +113,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
             try {
                 if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
-                    BitwiseOperatorError error = new BitwiseOperatorError(0, 0);
+                    int lineNumber = -1;
+                    if (expression.getRange().isPresent()) {
+                        lineNumber = expression.getRange().get().begin.line;
+                    }
+                    BitwiseOperatorError error = new BitwiseOperatorError();
+                    error.setLineNumber(lineNumber);
                     error.setLeftOperand(left.toString());
                     error.setRightOperand(right.toString());
                     error.setOperator(operator.asString());
@@ -156,11 +177,16 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
         }
         if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError) {
-            report.addBug(new MissingEqualsMethodError(0, 0));
+            report.addBug(new MissingEqualsMethodError());
         }
         uninitializedFieldDeclarations.removeAll(initializedFieldDeclarations);
         for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
-            FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError(0,0);
+            int lineNumber = -1;
+            if (declaration.getRange().isPresent()) {
+                lineNumber = declaration.getRange().get().begin.line;
+            }
+            FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError();
+            error.setLineNumber(lineNumber);
             error.setClass(declaration.getNameAsString());
             error.setFieldVariableName(uninitializedFieldDeclaration.getNameAsString());
             error.setFieldVariableType(uninitializedFieldDeclaration.getType().asString());
@@ -197,12 +223,22 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         boolean thenStatementIsEmpty = thenStatement.getMetaModel().getTypeName().equals("EmptyStmt");
         boolean thenStatementHasCurlyBraces = thenStatement instanceof BlockStmt;
         if (thenStatementIsEmpty) {
-            SemiColonAfterIfError error = new SemiColonAfterIfError(0,0);
+            int lineNumber = -1;
+            if (statement.getRange().isPresent()) {
+                lineNumber = statement.getRange().get().begin.line;
+            }
+            SemiColonAfterIfError error = new SemiColonAfterIfError();
+            error.setLineNumber(lineNumber);
             error.setCondition(statement.getCondition().toString());
             report.addBug(error);
         }
         if (!thenStatementHasCurlyBraces) {
-            IfWithoutBracketsError error = new IfWithoutBracketsError(0,0);
+            int lineNumber = -1;
+            if (statement.getRange().isPresent()) {
+                lineNumber = statement.getRange().get().begin.line;
+            }
+            IfWithoutBracketsError error = new IfWithoutBracketsError();
+            error.setLineNumber(lineNumber);
             error.setCondition(statement.getCondition().toString());
             error.setThenBranch(statement.getThenStmt().toString());
             report.addBug(error);

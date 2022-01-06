@@ -8,10 +8,6 @@ public class BitwiseOperatorError extends BaseError {
     private String operator;
     private String rightOperand;
 
-    public BitwiseOperatorError(int offset, int length) {
-        super(offset, length);
-    }
-
     @Override
     public Optional<String> getSuggestion() {
         if (this.leftOperand != null && this.operator != null && this.rightOperand != null) {

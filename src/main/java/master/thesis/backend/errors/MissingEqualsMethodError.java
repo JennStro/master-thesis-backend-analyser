@@ -4,10 +4,6 @@ import java.util.Optional;
 
 public class MissingEqualsMethodError extends BaseError {
 
-    public MissingEqualsMethodError(int offset, int length) {
-        super(offset, length);
-    }
-
     @Override
     public Optional<String> getSuggestion() {
         return Optional.of("You should add the method \n \n "

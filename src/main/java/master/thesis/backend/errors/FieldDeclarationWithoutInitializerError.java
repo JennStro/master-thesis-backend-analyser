@@ -8,10 +8,6 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
     private String className;
     private String name;
 
-    public FieldDeclarationWithoutInitializerError(int offset, int length) {
-        super(offset, length);
-    }
-
     public void setFieldVariableType(String type) {
         this.type = type;
     }

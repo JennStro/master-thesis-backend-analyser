@@ -8,9 +8,6 @@ public class IgnoringReturnError extends BaseError {
     private String returnType;
     private String methodCall;
 
-    public IgnoringReturnError(int offset, int length) {
-        super(offset, length);
-    }
     @Override
     public Optional<String> getSuggestion() {
         if (this.returnType != null && this.methodCall != null) {

@@ -7,10 +7,6 @@ public class IfWithoutBracketsError extends BaseError {
     private String condition;
     private Object thenBranch;
 
-    public IfWithoutBracketsError(int offset, int length) {
-        super(offset, length);
-    }
-
     public void setCondition(String condition) {
         this.condition = condition;
     }

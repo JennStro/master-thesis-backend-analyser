@@ -4,20 +4,36 @@ import java.util.Optional;
 
 public abstract class BaseError {
 
-    private final int offset;
-    private final int length;
-
-    public BaseError(int offset, int length) {
-        this.offset = offset;
-        this.length = length;
-    }
+    private int offsetStart = -1;
+    private int offsetEnd = -1;
+    private int lineNumber = -1;
 
     public int getOffset() {
-        return this.offset;
+        return this.offsetStart;
     }
 
     public int getLength() {
-        return this.length;
+        return this.offsetEnd;
+    }
+
+    /**
+     *
+     * @return The linenumber of this error. Returns -1 if no linenumber exists.
+     */
+    public int getLineNumber() {
+        return this.lineNumber;
+    }
+
+    public void setOffsetStart(int offsetStart) {
+        this.offsetStart = offsetStart;
+    }
+
+    public void setOffsetEnd(int offsetEnd) {
+        this.offsetEnd = offsetEnd;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
     }
 
     /**

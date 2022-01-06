@@ -8,10 +8,6 @@ public class EqualsOperatorError extends BaseError {
     private String objectTwo;
     private boolean isNegated = false;
 
-    public EqualsOperatorError(int offset, int length) {
-        super(offset, length);
-    }
-
     @Override
     public Optional<String> getSuggestion() {
         if (this.objectOne != null && this.objectTwo != null) {
