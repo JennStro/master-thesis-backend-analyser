@@ -491,4 +491,64 @@ public class BugFinderTest {
         Assertions.assertEquals("You should try i.equals(i2)", error.getSuggestion().get());
     }
 
+    @Test
+    public void bitwiseOperatorClass() {
+        String path = "src/test/java/BitwiseOperatorClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("BitwiseOperatorClass", error.getContainingClass());
+        Assertions.assertEquals("You should try: \n" +
+                " \n" +
+                "bar.drinksHaveBeenInitialized() && bar.barHasMoreThenFiveDrinks()", error.getSuggestion().get());
+    }
+
+    @Test
+    public void fieldInitClass() {
+        String path = "src/test/java/FieldInitClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("FieldInitClass", error.getContainingClass());
+        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
+                " \n" +
+                "public FieldInitClass(ArrayList<String> list) { \n" +
+                " \tthis.list = list;\n" +
+                "}", error.getSuggestion().get());
+    }
+
+    @Test
+    public void ifWithoutBracketsClass() {
+        String path = "src/test/java/IfWithoutBracketsClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("IfWithoutBracketsClass", error.getContainingClass());
+        Assertions.assertEquals("You should enclose the body in brackets: \n" +
+                "if (shouldAddToList) { \n" +
+                "    list.add(\"1\");\n" +
+                "}", error.getSuggestion().get());
+    }
+
 }

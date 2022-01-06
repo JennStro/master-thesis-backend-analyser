@@ -29,7 +29,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         super.visit(expression, arg);
         try {
             expression.resolve();
-            if (!expression.resolve().getReturnType().isVoid()) {
+            if (!expression.resolve().getReturnType().isVoid() && !expression.resolve().getReturnType().describe().equals("boolean")) {
                 if (expression.getParentNode().isPresent()) {
                     boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
                     if (methodCallIsNotUsed) {
