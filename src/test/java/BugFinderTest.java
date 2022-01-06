@@ -437,4 +437,32 @@ public class BugFinderTest {
                 "}", error.getSuggestion().get());
     }
 
+    @Test
+    public void ignoreEqualsAndInit() {
+        String path = "src/test/java/IgnoreEqualsAndInitError.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void ignoreEqualsInnerClass() {
+        String path = "src/test/java/IgnoreEqualsOnlyInnerClass.java";
+        CompilationUnit compilationUnit = null;
+        try {
+            compilationUnit = StaticJavaParser.parse(new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+    }
+
 }

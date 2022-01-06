@@ -1,6 +1,5 @@
 package master.thesis.backend.visitor;
 
-import com.github.javaparser.Range;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
-    private boolean shouldIgnoreNoEqualsMethodError = false;
 
     /**
      * Find methodcalls that have ignored return value.
@@ -142,14 +140,20 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         super.visit(declaration, arg);
         report.setClassName(declaration.getNameAsString());
         List<Node> children = declaration.getChildNodes();
+
         boolean classHasEqualsMethod = false;
-        System.out.println(children);
+        boolean shouldIgnoreNoEqualsMethodError = false;
 
         ArrayList<VariableDeclarator> uninitializedFieldDeclarations = new ArrayList<>();
         ArrayList<VariableDeclarator> initializedFieldDeclarations = new ArrayList<>();
 
         for (Node child : children) {
 
+            if (child instanceof MarkerAnnotationExpr) {
+                if (child.toString().equals("@NoEqualsMethod")) {
+                    shouldIgnoreNoEqualsMethodError = true;
+                }
+            }
             if (child instanceof MethodDeclaration) {
                 MethodDeclaration equalsMethodCandidate = (MethodDeclaration) child;
                 if (equalsMethodCandidate.getNameAsString().equals("equals")) {
@@ -198,6 +202,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             error.setFieldVariableType(uninitializedFieldDeclaration.getType().asString());
             report.addBug(error);
         }
+
     }
 
     private Optional<FieldAccessExpr> getFieldAccessExpr(Statement constructorStatement) {
@@ -248,19 +253,6 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             error.setCondition(statement.getCondition().toString());
             error.setThenBranch(statement.getThenStmt().toString());
             report.addBug(error);
-        }
-    }
-
-
-    /**
-     * Check if annotations for ignoring have been set.
-     * @param declaration
-     * @param arg
-     */
-    public void visit(MarkerAnnotationExpr declaration, Void arg) {
-        super.visit(declaration, arg);
-        if (declaration.toString().equals("@NoEqualsMethod")) {
-            this.shouldIgnoreNoEqualsMethodError = true;
         }
     }
 
