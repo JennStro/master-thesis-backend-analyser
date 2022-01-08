@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>master.thesis.backend.analyser</groupId>
     <artifactId>master-thesis-backend-analyser</artifactId>
     <version>0.1.0</version>
 
@@ -12,6 +12,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>repsy</id>
+            <name>master-thesis-analyser</name>
+            <url>https://repo.repsy.io/mvn/jennstro/master-thesis-analyser</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
