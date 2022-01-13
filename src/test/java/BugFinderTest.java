@@ -578,4 +578,13 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void unresolvedParameterError() {
+        String code = "@NoEqualsMethod class A { public void method(B b) {} }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }
