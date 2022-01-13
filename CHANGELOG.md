@@ -1,3 +1,6 @@
+### :bug: 1.1.2
+Bug fix: Fixed error when equal op is used in equals method and no equals method in interface. 
+
 ### :star: 1.1.0   
 New feature: Save linenumber of error.
 
