@@ -569,4 +569,13 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void equalsMethodNotInInterface() {
+        String code = "interface A { }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }

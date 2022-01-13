@@ -206,7 +206,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
-        if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError) {
+        if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError && !declaration.isInterface()) {
             MissingEqualsMethodError error = new MissingEqualsMethodError();
             error.setContainingClass(declaration.getNameAsString());
             report.addBug(error);
