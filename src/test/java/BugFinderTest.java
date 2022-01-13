@@ -560,4 +560,13 @@ public class BugFinderTest {
                 "}", error.getSuggestion().get());
     }
 
+    @Test
+    public void equalsOperatorOnObjectInEqualsMethodIsAllowed() {
+        String code = "class A { public boolean equals(Object o) {return this == o;}}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }

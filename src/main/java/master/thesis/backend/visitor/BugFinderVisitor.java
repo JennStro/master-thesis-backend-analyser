@@ -71,51 +71,52 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Expression left = expression.getLeft();
         Expression right = expression.getRight();
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-
-            try {
-                boolean expressionsArePrimitiveOrNull =
-                        left.calculateResolvedType().isPrimitive()
-                        || right.calculateResolvedType().isPrimitive()
-                        || left.calculateResolvedType().isNull()
-                        || right.calculateResolvedType().isNull();
-                if (!expressionsArePrimitiveOrNull) {
-                    int lineNumber = -1;
-                    if (expression.getRange().isPresent()) {
-                        lineNumber = expression.getRange().get().begin.line;
+            if (!isInsideEqualsMethod(expression)) {
+                try {
+                    boolean expressionsArePrimitiveOrNull =
+                            left.calculateResolvedType().isPrimitive()
+                            || right.calculateResolvedType().isPrimitive()
+                            || left.calculateResolvedType().isNull()
+                            || right.calculateResolvedType().isNull();
+                    if (!expressionsArePrimitiveOrNull) {
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        EqualsOperatorError error = new EqualsOperatorError();
+                        if (getContainingClass(expression).isPresent()) {
+                            error.setContainingClass(getContainingClass(expression).get());
+                        }
+                        error.setLineNumber(lineNumber);
+                        error.setObjectOne(left.toString());
+                        error.setObjectTwo(right.toString());
+                        if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+                            error.withNegatedOperator();
+                        }
+                        report.addBug(error);
                     }
-                    EqualsOperatorError error = new EqualsOperatorError();
-                    if (getContainingClass(expression).isPresent()) {
-                        error.setContainingClass(getContainingClass(expression).get());
+                } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                    // When a type is not resolved, it in not a primitive. But an object may be called upon, which can
+                    // result in a primitive. So we need to check that it is only the object.
+                    boolean leftIsObjectReference = left.isNameExpr();
+                    boolean rightIsObjectReference = right.isNameExpr();
+                    if (leftIsObjectReference && rightIsObjectReference) {
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        EqualsOperatorError error = new EqualsOperatorError();
+                        if (getContainingClass(expression).isPresent()) {
+                            error.setContainingClass(getContainingClass(expression).get());
+                        }
+                        error.setLineNumber(lineNumber);
+                        error.setObjectOne(left.toString());
+                        error.setObjectTwo(right.toString());
+                        if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
+                            error.withNegatedOperator();
+                        }
+                        report.addBug(error);
                     }
-                    error.setLineNumber(lineNumber);
-                    error.setObjectOne(left.toString());
-                    error.setObjectTwo(right.toString());
-                    if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                        error.withNegatedOperator();
-                    }
-                    report.addBug(error);
-                }
-            } catch (UnsolvedSymbolException unsolvedSymbolException) {
-                // When a type is not resolved, it in not a primitive. But an object may be called upon, which can
-                // result in a primitive. So we need to check that it is only the object.
-                boolean leftIsObjectReference = left.isNameExpr();
-                boolean rightIsObjectReference = right.isNameExpr();
-                if (leftIsObjectReference && rightIsObjectReference) {
-                    int lineNumber = -1;
-                    if (expression.getRange().isPresent()) {
-                        lineNumber = expression.getRange().get().begin.line;
-                    }
-                    EqualsOperatorError error = new EqualsOperatorError();
-                    if (getContainingClass(expression).isPresent()) {
-                        error.setContainingClass(getContainingClass(expression).get());
-                    }
-                    error.setLineNumber(lineNumber);
-                    error.setObjectOne(left.toString());
-                    error.setObjectTwo(right.toString());
-                    if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                        error.withNegatedOperator();
-                    }
-                    report.addBug(error);
                 }
             }
 
@@ -140,6 +141,11 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             } catch (UnsolvedSymbolException ignore) {}
         }
+    }
+
+    private boolean isInsideEqualsMethod(Node node) {
+        Optional<MethodDeclaration> methodParent = node.findAncestor(MethodDeclaration.class);
+        return methodParent.isPresent() && methodParent.get().getNameAsString().equals("equals");
     }
 
     /**
