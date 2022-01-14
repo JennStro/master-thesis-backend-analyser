@@ -1,3 +1,6 @@
+### :star: 1.2.0
+New feature: Add links for more info.
+
 ### :bug: 1.1.2
 Bug fix: Fixed error when equal op is used in equals method and no equals method in interface. 
 
