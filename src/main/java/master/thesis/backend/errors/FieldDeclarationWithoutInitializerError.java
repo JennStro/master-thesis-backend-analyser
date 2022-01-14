@@ -31,4 +31,9 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
         return "You should initialize the field variable!";
     }
 
+    @Override
+    public Optional<String> getLink() {
+        return Optional.empty();
+    }
+
 }

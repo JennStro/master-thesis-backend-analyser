@@ -33,6 +33,11 @@ public class BitwiseOperatorError extends BaseError {
         return "You are using the bitwiseoperator (& or |) as a logical operator.";
     }
 
+    @Override
+    public Optional<String> getLink() {
+        return Optional.empty();
+    }
+
     private String convertBitwiseOperatorToConditionalOperator(String operator) {
         if ("&".equals(operator)) {
             return "&&";

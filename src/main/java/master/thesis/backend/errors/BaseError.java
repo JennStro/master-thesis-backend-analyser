@@ -62,5 +62,11 @@ public abstract class BaseError {
      */
     public abstract String getWhat();
 
+    /**
+     *
+     * @return a string with more info about the error
+     */
+    public abstract Optional<String> getLink();
+
 
 }

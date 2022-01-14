@@ -21,7 +21,12 @@ public class SemiColonAfterIfError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "You have a semicolon (;) after an if-statement.";
+        return "You have a semicolon (;) after an if-statement!";
+    }
+
+    @Override
+    public Optional<String> getLink() {
+        return Optional.empty();
     }
 
 }

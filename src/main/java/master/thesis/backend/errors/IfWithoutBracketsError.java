@@ -21,6 +21,7 @@ public class IfWithoutBracketsError extends BaseError {
             return Optional.of("You should enclose the body in brackets: \n"
                     + "if ("+ this.condition + ")" + " { \n"
                     + "    " +  this.thenBranch + "\n"
+                    + "    " + "..." + "\n"
                     + "}");
         }
         return Optional.empty();
@@ -28,7 +29,12 @@ public class IfWithoutBracketsError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "You should use brackets after if!";
+        return "Java does not care about indentation like Python does! Java only cares about brackets, so you should always use brackets in an if-statement.";
+    }
+
+    @Override
+    public Optional<String> getLink() {
+        return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/ifstatement");
     }
 
 }

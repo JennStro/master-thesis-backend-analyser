@@ -34,8 +34,13 @@ public class EqualsOperatorError extends BaseError {
     @Override
     public String getWhat() {
         if (isNegated) {
-            return "You are using \"!=\" to compare objects.";
+            return "In Python you could use \"!=\" to compare objects, but in Java we use \"!=\" to see if two objects are the same instance.";
         }
-        return "You are using \"==\" to compare objects.";
+        return "In Python you could use \"==\" to compare objects, but in Java we use \"==\" to see if two objects are the same instance.";
+    }
+
+    @Override
+    public Optional<String> getLink() {
+        return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/equalsoperator");
     }
 }

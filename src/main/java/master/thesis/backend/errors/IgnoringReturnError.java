@@ -28,4 +28,9 @@ public class IgnoringReturnError extends BaseError {
     public String getWhat() {
         return "You are ignoring a return value.";
     }
+
+    @Override
+    public Optional<String> getLink() {
+        return Optional.empty();
+    }
 }
