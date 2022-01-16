@@ -14,8 +14,13 @@ public class SemiColonAfterIfError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.condition != null) {
-            return Optional.of("You should try \n \n if (" + this.condition + ") {\n 	// ...your code here... \n}");
+            return Optional.of("if (" + this.condition + ") { }");
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
         return Optional.empty();
     }
 

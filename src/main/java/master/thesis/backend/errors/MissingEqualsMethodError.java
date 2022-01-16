@@ -6,13 +6,12 @@ public class MissingEqualsMethodError extends BaseError {
 
     @Override
     public Optional<String> getSuggestion() {
-        return Optional.of("You should add the method \n \n "
-                + "@Override \n"
-                + "public boolean equals(Object o) { \n"
-                + "   //... Your implementation here... \n"
-                + "}" +
-                "\n" +
-                "Tip: Maybe your IDE has something like \"generate equals and hash methods\"?");
+        return Optional.of( "@Override public boolean equals(Object o) { }" );
+    }
+
+    @Override
+    public Optional<String> getTip() {
+        return Optional.of("Tip: Maybe your IDE has something like \"generate equals and hash methods\"?");
     }
 
     @Override

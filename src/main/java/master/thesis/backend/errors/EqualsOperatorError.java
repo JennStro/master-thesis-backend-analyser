@@ -12,10 +12,15 @@ public class EqualsOperatorError extends BaseError {
     public Optional<String> getSuggestion() {
         if (this.objectOne != null && this.objectTwo != null) {
             if (isNegated) {
-                return Optional.of("You should try !" + this.objectOne + ".equals(" + this.objectTwo + ")");
+                return Optional.of("!" + this.objectOne + ".equals(" + this.objectTwo + ")");
             }
-            return Optional.of("You should try " + this.objectOne + ".equals(" + this.objectTwo + ")");
+            return Optional.of(this.objectOne + ".equals(" + this.objectTwo + ")");
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
         return Optional.empty();
     }
 

@@ -18,12 +18,16 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.containingClass != null && this.name != null && this.type != null) {
-           return Optional.of("You could initialize the fieldvariable in the constructor: \n \n"
-                    + "public " + this.containingClass + "(" + this.type + " " + this.name + ") { \n "
-                    + "	this." + this.name + " = " + this.name + ";\n"
+           return Optional.of("public " + this.containingClass + "(" + this.type + " " + this.name + ") {"
+                    + "	this." + this.name + " = " + this.name + ";"
                     + "}");
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
+        return Optional.of("Tip: You could also initialize the field directly!");
     }
 
     @Override

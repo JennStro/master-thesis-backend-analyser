@@ -11,8 +11,13 @@ public class BitwiseOperatorError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.leftOperand != null && this.operator != null && this.rightOperand != null) {
-            return Optional.of("You should try: \n \n" + this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand);
+            return Optional.of(this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand);
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
         return Optional.empty();
     }
 

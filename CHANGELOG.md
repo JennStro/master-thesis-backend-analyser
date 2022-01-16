@@ -1,3 +1,6 @@
+### :star: 1.3.0
+New feature: Add tip and make separate text from suggestion code.
+
 ### :star: 1.2.0
 New feature: Add links for more info.
 

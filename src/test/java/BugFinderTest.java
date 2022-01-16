@@ -226,9 +226,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try \n" +
-                "\n" +
-                "java.lang.String variableName = a.toLowerCase();", error.getSuggestion().get());
+        Assertions.assertEquals("java.lang.String variableName = a.toLowerCase();", error.getSuggestion().get());
     }
 
     @Test
@@ -240,7 +238,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try a.equals(b)", error.getSuggestion().get());
+        Assertions.assertEquals("a.equals(b)", error.getSuggestion().get());
     }
 
     @Test
@@ -252,7 +250,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try !a.equals(b)", error.getSuggestion().get());
+        Assertions.assertEquals("!a.equals(b)", error.getSuggestion().get());
     }
 
     @Test
@@ -264,9 +262,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try: \n" +
-                " \n" +
-                "a == 0 || b == 0", error.getSuggestion().get());
+        Assertions.assertEquals("a == 0 || b == 0", error.getSuggestion().get());
     }
 
     @Test
@@ -278,9 +274,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try: \n" +
-                " \n" +
-                "a == 0 && b == 0", error.getSuggestion().get());
+        Assertions.assertEquals("a == 0 && b == 0", error.getSuggestion().get());
     }
 
     @Test
@@ -292,11 +286,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
-                " \n" +
-                "public A(int a) { \n" +
-                " \tthis.a = a;\n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("public A(int a) {\tthis.a = a;}", error.getSuggestion().get());
     }
 
     @Test
@@ -308,11 +298,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try \n" +
-                " \n" +
-                " if (true) {\n" +
-                " \t// ...your code here... \n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("if (true) { }", error.getSuggestion().get());
     }
 
     @Test
@@ -324,10 +310,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should enclose the body in brackets: \n" +
-                "if (true) { \n" +
-                "    System.out.println(\"\");\n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("if (true) {System.out.println(\"\");...}", error.getSuggestion().get());
     }
 
     @Test
@@ -360,9 +343,7 @@ public class BugFinderTest {
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try \n" +
-                "\n" +
-                "java.lang.String variableName = b.toString();", error.getSuggestion().get());
+        Assertions.assertEquals("java.lang.String variableName = b.toString();", error.getSuggestion().get());
     }
 
     @Test
@@ -373,7 +354,7 @@ public class BugFinderTest {
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("You should try b.equals(b1)", error.getSuggestion().get());
+        Assertions.assertEquals("b.equals(b1)", error.getSuggestion().get());
     }
 
     @Test
@@ -417,12 +398,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("InnerClass", error.getContainingClass());
-        Assertions.assertEquals("You should add the method \n" +
-                " \n" +
-                " @Override \n" +
-                "public boolean equals(Object o) { \n" +
-                "   //... Your implementation here... \n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("@Override public boolean equals(Object o) { }", error.getSuggestion().get());
     }
 
     @Test
@@ -439,11 +415,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("InnerClass", error.getContainingClass());
-        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
-                " \n" +
-                "public InnerClass(int number) { \n" +
-                " \tthis.number = number;\n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("public InnerClass(int number) {\tthis.number = number;}", error.getSuggestion().get());
         Assertions.assertEquals(9, error.getLineNumber());
     }
 
@@ -475,12 +447,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("IgnoreEqualsOnlyInnerClass", error.getContainingClass());
-        Assertions.assertEquals("You should add the method \n" +
-                " \n" +
-                " @Override \n" +
-                "public boolean equals(Object o) { \n" +
-                "   //... Your implementation here... \n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("@Override public boolean equals(Object o) { }", error.getSuggestion().get());
     }
 
     @Test
@@ -497,7 +464,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("EqualsOperatorClass", error.getContainingClass());
-        Assertions.assertEquals("You should try i.equals(i2)", error.getSuggestion().get());
+        Assertions.assertEquals("i.equals(i2)", error.getSuggestion().get());
     }
 
     @Test
@@ -514,9 +481,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("BitwiseOperatorClass", error.getContainingClass());
-        Assertions.assertEquals("You should try: \n" +
-                " \n" +
-                "bar.drinksHaveBeenInitialized() && bar.barHasMoreThenFiveDrinks()", error.getSuggestion().get());
+        Assertions.assertEquals("bar.drinksHaveBeenInitialized() && bar.barHasMoreThenFiveDrinks()", error.getSuggestion().get());
     }
 
     @Test
@@ -533,11 +498,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("FieldInitClass", error.getContainingClass());
-        Assertions.assertEquals("You could initialize the fieldvariable in the constructor: \n" +
-                " \n" +
-                "public FieldInitClass(ArrayList<String> list) { \n" +
-                " \tthis.list = list;\n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("public FieldInitClass(ArrayList<String> list) {\tthis.list = list;}", error.getSuggestion().get());
     }
 
     @Test
@@ -554,10 +515,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("IfWithoutBracketsClass", error.getContainingClass());
-        Assertions.assertEquals("You should enclose the body in brackets: \n" +
-                "if (shouldAddToList) { \n" +
-                "    list.add(\"1\");\n" +
-                "}", error.getSuggestion().get());
+        Assertions.assertEquals("if (shouldAddToList) {list.add(\"1\");...}", error.getSuggestion().get());
     }
 
     @Test

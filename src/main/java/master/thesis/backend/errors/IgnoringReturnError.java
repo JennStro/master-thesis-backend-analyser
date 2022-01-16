@@ -11,8 +11,13 @@ public class IgnoringReturnError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.returnType != null && this.methodCall != null) {
-            return Optional.of("You should try \n\n" + this.returnType + " variableName = " + this.methodCall + ";");
+            return Optional.of(this.returnType + " variableName = " + this.methodCall + ";");
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
         return Optional.empty();
     }
 

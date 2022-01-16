@@ -18,12 +18,15 @@ public class IfWithoutBracketsError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.condition != null && this.thenBranch != null) {
-            return Optional.of("You should enclose the body in brackets: \n"
-                    + "if ("+ this.condition + ")" + " { \n"
-                    + "    " +  this.thenBranch + "\n"
-                    + "    " + "..." + "\n"
+            return Optional.of("if ("+ this.condition + ")" + " {"
+                    + this.thenBranch + "..."
                     + "}");
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getTip() {
         return Optional.empty();
     }
 
