@@ -1,3 +1,6 @@
+### :bug: 1.3.1
+Bug: Propagate the parse error message.
+
 ### :star: 1.3.0
 New feature: Add tip and make separate text from suggestion code.
 

@@ -3,6 +3,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import master.thesis.backend.analyser.Analyser;
 import master.thesis.backend.errors.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -543,6 +544,15 @@ public class BugFinderTest {
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void syntaxErrorTest() {
+        String code = "@NoEqualsMethod class A public void method(B b) {} }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getException().isPresent());
     }
 
 }

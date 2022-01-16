@@ -1,5 +1,6 @@
 package master.thesis.backend.analyser;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -15,9 +16,15 @@ public class Analyser {
         combinedTypeSolver.add(new ReflectionTypeSolver());
         StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
 
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        BugFinderVisitor visitor = new BugFinderVisitor();
-        visitor.visit(compilationUnit, null);
-        return visitor.getReport();
+        try {
+            CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+            BugFinderVisitor visitor = new BugFinderVisitor();
+            visitor.visit(compilationUnit, null);
+            return visitor.getReport();
+        } catch (ParseProblemException e) {
+            BugReport report = new BugReport();
+            report.attach(e);
+            return report;
+        }
     }
 }
