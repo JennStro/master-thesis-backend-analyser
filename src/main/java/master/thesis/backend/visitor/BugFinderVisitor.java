@@ -8,6 +8,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.types.ResolvedType;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
@@ -18,44 +19,6 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
 
-    /**
-     * Find methodcalls that have ignored return value.
-     *
-     * @param expression
-     * @param arg
-     */
-    @Override
-    public void visit(MethodCallExpr expression, Void arg) {
-        super.visit(expression, arg);
-        try {
-            expression.resolve();
-            if (!expression.resolve().getReturnType().isVoid() && !expression.resolve().getReturnType().describe().equals("boolean")) {
-                if (expression.getParentNode().isPresent()) {
-                    boolean methodCallIsNotUsed = expression.getParentNode().get().getMetaModel().getTypeName().equals("ExpressionStmt");
-                    if (methodCallIsNotUsed) {
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
-                        IgnoringReturnError error = new IgnoringReturnError();
-                        if (getContainingClass(expression).isPresent()) {
-                            error.setContainingClass(getContainingClass(expression).get());
-                        }
-                        error.setLineNumber(lineNumber);
-                        error.setReturnType(expression.resolve().getReturnType().describe());
-                        error.setMethodCall(expression.toString());
-                        report.addBug(error);
-                    }
-                } else {
-                    report.addBug(new IgnoringReturnError());
-                }
-            }
-        } catch (UnsolvedSymbolException unsolvedSymbolException) {
-            //When a methodcall is unresolved, we can not find the returntype, so we can not check if it returns void.
-            report.attach(unsolvedSymbolException);
-        }
-
-    }
 
     /**
      * Check that objects is not compared with the equals operator.
@@ -74,12 +37,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
             if (!isInsideEqualsMethod(expression)) {
                 try {
-                    boolean expressionsArePrimitiveOrNull =
-                            left.calculateResolvedType().isPrimitive()
-                            || right.calculateResolvedType().isPrimitive()
-                            || left.calculateResolvedType().isNull()
-                            || right.calculateResolvedType().isNull();
-                    if (!expressionsArePrimitiveOrNull) {
+                    if (!isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right)) {
                         int lineNumber = -1;
                         if (expression.getRange().isPresent()) {
                             lineNumber = expression.getRange().get().begin.line;
@@ -97,8 +55,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         report.addBug(error);
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
-                    // When a type is not resolved, it in not a primitive. But an object may be called upon, which can
-                    // result in a primitive. So we need to check that it is only the object.
+                    // When a type is not resolved, we know it is not a primitive. But an object may be called upon, which can
+                    // result in a primitive. So we need to check that it is only the object. If it is called upon, we add the
+                    // exception. If not, we add the bug.
                     boolean leftIsObjectReference = left.isNameExpr();
                     boolean rightIsObjectReference = right.isNameExpr();
                     if (leftIsObjectReference && rightIsObjectReference) {
@@ -118,31 +77,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         }
                         report.addBug(error);
                     }
+                    else {
+                        report.attach(unsolvedSymbolException);
+                    }
                 }
             }
 
 
-        }
-        if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
-            try {
-                if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
-                    int lineNumber = -1;
-                    if (expression.getRange().isPresent()) {
-                        lineNumber = expression.getRange().get().begin.line;
-                    }
-                    BitwiseOperatorError error = new BitwiseOperatorError();
-                    if (getContainingClass(expression).isPresent()) {
-                        error.setContainingClass(getContainingClass(expression).get());
-                    }
-                    error.setLineNumber(lineNumber);
-                    error.setLeftOperand(left.toString());
-                    error.setRightOperand(right.toString());
-                    error.setOperator(operator.asString());
-                    report.addBug(error);
-                }
-            } catch (UnsolvedSymbolException unsolvedSymbolException) {
-                report.attach(unsolvedSymbolException);
-            }
         }
         if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
             try {
@@ -156,6 +97,25 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 report.attach(unsolvedSymbolException);
             }
         }
+    }
+
+    /**
+     *
+     * @param expr
+     * @return True if is i a methodcall and it returns either primitive or null. False otherwise.
+     * @throws UnsolvedSymbolException
+     */
+    private boolean ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(Expression expr) throws UnsolvedSymbolException {
+        if (expr.isMethodCallExpr()) {
+            MethodCallExpr methodCallExpr = (MethodCallExpr) expr;
+            ResolvedType returnType = methodCallExpr.resolve().getReturnType();
+            return returnType.isPrimitive() || returnType.isNull();
+        }
+        return false;
+    }
+
+    private boolean isPrimitiveOrNull(Expression exp) throws UnsolvedSymbolException {
+        return exp.calculateResolvedType().isPrimitive() || exp.calculateResolvedType().isNull();
     }
 
     private boolean isInsideEqualsMethod(Node node) {

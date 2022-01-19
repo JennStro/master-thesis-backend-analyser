@@ -1,3 +1,6 @@
+### :fire: 2.0.0   
+Breaking change: Remove `Ignoring return` error, `Bitwise operator` error.
+
 ### :bug: 1.4.3
 Bug: Attach the exception to the report
 
