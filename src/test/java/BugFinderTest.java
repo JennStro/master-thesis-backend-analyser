@@ -555,4 +555,30 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getException().isPresent());
     }
 
+    @Test
+    public void integerDivisionTest() {
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void integerDivisionCastingTest() {
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println((double)a/(double)b);} }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void integerDivisionSuggestionTest() {
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("(double)a/(double)b", error.getSuggestion().get());
+    }
+
 }

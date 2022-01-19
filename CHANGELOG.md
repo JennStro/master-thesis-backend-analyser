@@ -1,3 +1,6 @@
+### :star: 1.4.0   
+New feature: Add integer division error
+
 ### :bug: 1.3.1
 Bug: Propagate the parse error message.
 

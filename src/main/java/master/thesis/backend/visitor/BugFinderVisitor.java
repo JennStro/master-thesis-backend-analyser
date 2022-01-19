@@ -141,6 +141,16 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             } catch (UnsolvedSymbolException ignore) {}
         }
+        if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
+            try {
+                if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
+                    IntegerDivisionError integerDivisionError = new IntegerDivisionError();
+                    integerDivisionError.setLeftInteger(left.toString());
+                    integerDivisionError.setRightInteger(right.toString());
+                    report.addBug(integerDivisionError);
+                }
+            } catch (UnsolvedSymbolException ignore) {}
+        }
     }
 
     private boolean isInsideEqualsMethod(Node node) {
