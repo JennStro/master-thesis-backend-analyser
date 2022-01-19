@@ -1,7 +1,5 @@
 package master.thesis.backend.errors;
 
-import com.github.javaparser.ParseProblemException;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -9,7 +7,7 @@ public class BugReport {
 
     private ArrayList<BaseError> bugs = new ArrayList<>();
     private String className;
-    private ParseProblemException e;
+    private Throwable e;
 
     public int getNumberOfBugs() {
         return bugs.size();
@@ -31,11 +29,11 @@ public class BugReport {
         this.bugs.add(error);
     }
 
-    public void attach(ParseProblemException e) {
+    public void attach(Throwable e) {
         this.e = e;
     }
 
-    public Optional<ParseProblemException> getException() {
+    public Optional<Throwable> getException() {
         if (e == null) {
             return Optional.empty();
         }

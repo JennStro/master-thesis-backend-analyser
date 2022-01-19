@@ -1,6 +1,5 @@
 package master.thesis.backend.analyser;
 
-import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -21,7 +20,7 @@ public class Analyser {
             BugFinderVisitor visitor = new BugFinderVisitor();
             visitor.visit(compilationUnit, null);
             return visitor.getReport();
-        } catch (ParseProblemException e) {
+        } catch (Throwable e) {
             BugReport report = new BugReport();
             report.attach(e);
             return report;

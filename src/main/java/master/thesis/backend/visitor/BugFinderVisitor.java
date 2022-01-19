@@ -50,8 +50,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     report.addBug(new IgnoringReturnError());
                 }
             }
-        } catch (UnsolvedSymbolException ignore) {
+        } catch (UnsolvedSymbolException unsolvedSymbolException) {
             //When a methodcall is unresolved, we can not find the returntype, so we can not check if it returns void.
+            report.attach(unsolvedSymbolException);
         }
 
     }
@@ -139,7 +140,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     error.setOperator(operator.asString());
                     report.addBug(error);
                 }
-            } catch (UnsolvedSymbolException ignore) {}
+            } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                report.attach(unsolvedSymbolException);
+            }
         }
         if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
             try {
@@ -149,7 +152,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     integerDivisionError.setRightInteger(right.toString());
                     report.addBug(integerDivisionError);
                 }
-            } catch (UnsolvedSymbolException ignore) {}
+            } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                report.attach(unsolvedSymbolException);
+            }
         }
     }
 

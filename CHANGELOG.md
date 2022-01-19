@@ -1,3 +1,12 @@
+### :bug: 1.4.3
+Bug: Attach the exception to the report
+
+### :bug: 1.4.2
+Bug: Also add exception when symbol is unresolved in methodInvocation
+
+### :bug: 1.4.1   
+Bug: Also add exception when symbol is unresolved
+
 ### :star: 1.4.0   
 New feature: Add integer division error
 
