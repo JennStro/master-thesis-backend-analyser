@@ -259,18 +259,25 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             report.addBug(error);
         }
         if (!thenStatementHasCurlyBraces) {
-            int lineNumber = -1;
+            int lineNumberOfIfStatement = -1;
             if (statement.getRange().isPresent()) {
-                lineNumber = statement.getRange().get().begin.line;
+                lineNumberOfIfStatement = statement.getRange().get().begin.line;
             }
-            IfWithoutBracketsError error = new IfWithoutBracketsError();
-            if (getContainingClass(statement).isPresent()) {
-                error.setContainingClass(getContainingClass(statement).get());
+            int lineNumberOfThenStatement = -1;
+            if (thenStatement.getRange().isPresent()) {
+                lineNumberOfThenStatement = thenStatement.getRange().get().begin.line;
             }
-            error.setLineNumber(lineNumber);
-            error.setCondition(statement.getCondition().toString());
-            error.setThenBranch(statement.getThenStmt().toString());
-            report.addBug(error);
+
+            if (lineNumberOfIfStatement != lineNumberOfThenStatement) {
+                IfWithoutBracketsError error = new IfWithoutBracketsError();
+                if (getContainingClass(statement).isPresent()) {
+                    error.setContainingClass(getContainingClass(statement).get());
+                }
+                error.setLineNumber(lineNumberOfIfStatement);
+                error.setCondition(statement.getCondition().toString());
+                error.setThenBranch(statement.getThenStmt().toString());
+                report.addBug(error);
+            }
         }
     }
 

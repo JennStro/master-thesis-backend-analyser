@@ -68,7 +68,7 @@ public class BugFinderTest {
 
     @Test
     public void ifWithoutBrackets() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) System.out.println(\"\"); }}";
+        String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -220,7 +220,7 @@ public class BugFinderTest {
 
     @Test
     public void ifWithoutBlockSuggestion() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) System.out.println(\"\"); }}";
+        String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -493,6 +493,15 @@ public class BugFinderTest {
         String codeEqualsOperator = "@NoEqualsMethod class A { public static void method() {A a1 = new A(); A a2 = new A(); System.out.println(a1==a2);} }";
         BugReport reportEqualsOperator = analyser.analyse(codeEqualsOperator);
         Assertions.assertTrue(reportEqualsOperator.getBugs().isEmpty());
+    }
+
+    @Test
+    public void allowIfOnSameLine() {
+        String code = "@NoEqualsMethod class A { public String method(boolean b) { if (b) return \"b is true\"; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
 }
