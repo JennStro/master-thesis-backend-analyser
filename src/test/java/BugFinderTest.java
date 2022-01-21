@@ -504,4 +504,15 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void arrayEquals() {
+        String code = "@NoEqualsMethod class A { public boolean method(int[] a, int[] b) { return a==b; } }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        BaseError error = report.getBugs().get(0);
+        Assertions.assertEquals("Arrays.equals(a, b)", error.getSuggestion().get());
+        Assertions.assertEquals("A", error.getContainingClass());
+    }
+
 }

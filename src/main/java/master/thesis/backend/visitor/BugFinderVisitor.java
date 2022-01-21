@@ -52,6 +52,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
                             error.withNegatedOperator();
                         }
+                        if (left.calculateResolvedType().isArray() && right.calculateResolvedType().isArray()) {
+                            error.setArraysSuggestion();
+                        }
                         report.addBug(error);
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {

@@ -7,10 +7,17 @@ public class EqualsOperatorError extends BaseError {
     private String objectOne;
     private String objectTwo;
     private boolean isNegated = false;
+    private boolean isArray = false;
 
     @Override
     public Optional<String> getSuggestion() {
         if (this.objectOne != null && this.objectTwo != null) {
+            if (isArray) {
+                if (isNegated) {
+                    return Optional.of("!Arrays.equals(" + this.objectOne + ", " + this.objectTwo + ")");
+                }
+                return Optional.of("Arrays.equals(" + this.objectOne + ", " + this.objectTwo + ")");
+            }
             if (isNegated) {
                 return Optional.of("!" + this.objectOne + ".equals(" + this.objectTwo + ")");
             }
@@ -34,6 +41,10 @@ public class EqualsOperatorError extends BaseError {
 
     public void setObjectTwo(String objectTwo) {
         this.objectTwo = objectTwo;
+    }
+
+    public void setArraysSuggestion() {
+        this.isArray = true;
     }
 
     @Override
