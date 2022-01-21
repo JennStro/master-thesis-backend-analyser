@@ -1,3 +1,6 @@
+### :bug: 2.1.1  
+Bug: Int division resulting in int not error
+
 ### :star: 2.1.0   
 New feature: Allow to print error in console
 
