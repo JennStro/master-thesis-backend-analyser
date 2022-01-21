@@ -515,4 +515,12 @@ public class BugFinderTest {
         Assertions.assertEquals("A", error.getContainingClass());
     }
 
+    @Test
+    public void integerDivisionResultsInIntAllowed() {
+        String code = "@NoEqualsMethod class A { public void method() {int a = 10; int b = 5; if(a/b==2) {System.out.println(\"Success\");}} }";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }

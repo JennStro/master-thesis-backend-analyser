@@ -12,6 +12,7 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,34 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
 
+    private HashMap<String, Integer> env = new HashMap<>();
+
+    /**
+     * Save all declarations of integer in env
+     * @param decl
+     * @param arg
+     */
+    @Override
+    public void visit(VariableDeclarator decl, Void arg) {
+        super.visit(decl, arg);
+        if (decl.getInitializer().isPresent() && decl.getInitializer().get().isIntegerLiteralExpr()) {
+            env.put(decl.getName().asString(), Integer.parseInt(decl.getInitializer().get().toString()));
+        }
+    }
+
+    /**
+     * Save all updates or assignments of integer variables to env.
+     * @param assignExpr
+     * @param arg
+     */
+    @Override
+    public void visit(AssignExpr assignExpr, Void arg) {
+        super.visit(assignExpr, arg);
+        String variableName = assignExpr.getTarget().toString();
+        if (env.containsKey(variableName)) {
+            env.put(variableName,  Integer.parseInt(assignExpr.getValue().toString()));
+        }
+    }
 
     /**
      * Check that objects is not compared with the equals operator.
@@ -92,24 +121,30 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
-                        IntegerDivisionError integerDivisionError = new IntegerDivisionError();
-                        if (getContainingClass(expression).isPresent()) {
-                            integerDivisionError.setContainingClass(getContainingClass(expression).get());
+                        if (!divisionResultsInInteger(left, right)) {
+                            IntegerDivisionError integerDivisionError = new IntegerDivisionError();
+                            if (getContainingClass(expression).isPresent()) {
+                                integerDivisionError.setContainingClass(getContainingClass(expression).get());
+                            }
+                            int lineNumber = -1;
+                            if (expression.getRange().isPresent()) {
+                                lineNumber = expression.getRange().get().begin.line;
+                            }
+                            integerDivisionError.setLineNumber(lineNumber);
+                            integerDivisionError.setLeftInteger(left.toString());
+                            integerDivisionError.setRightInteger(right.toString());
+                            report.addBug(integerDivisionError);
                         }
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
-                        integerDivisionError.setLineNumber(lineNumber);
-                        integerDivisionError.setLeftInteger(left.toString());
-                        integerDivisionError.setRightInteger(right.toString());
-                        report.addBug(integerDivisionError);
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
                 }
             }
         }
+    }
+
+    private boolean divisionResultsInInteger(Expression left, Expression right) {
+        return env.get(left.toString()) % env.get(right.toString()) == 0;
     }
 
     /**
