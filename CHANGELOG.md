@@ -1,3 +1,6 @@
+### :bug: 2.1.2  
+Bug: Add error when two statements on same line if
+
 ### :bug: 2.1.1  
 Bug: Int division resulting in int not error
 

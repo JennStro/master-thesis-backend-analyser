@@ -301,12 +301,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (statement.getRange().isPresent()) {
                 lineNumberOfIfStatement = statement.getRange().get().begin.line;
             }
-            int lineNumberOfThenStatement = -1;
-            if (thenStatement.getRange().isPresent()) {
-                lineNumberOfThenStatement = thenStatement.getRange().get().begin.line;
-            }
 
-            if (lineNumberOfIfStatement != lineNumberOfThenStatement) {
+            if (!statementBodyIsOnSameLine(thenStatement, lineNumberOfIfStatement) || hasSiblingAndSiblingIsOnSameLine(statement, lineNumberOfIfStatement)) {
                 IfWithoutBracketsError error = new IfWithoutBracketsError();
                 if (getContainingClass(statement).isPresent()) {
                     error.setContainingClass(getContainingClass(statement).get());
@@ -317,6 +313,42 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 report.addBug(error);
             }
         }
+    }
+
+    /**
+     * Covers the case of
+     *
+     * if (cond) statement1; statement2;
+     *
+     * @param statement
+     * @param lineNumberOfIfStatement
+     * @return true if if-statement has form if (cond) statement1; statement2;
+     */
+    private boolean hasSiblingAndSiblingIsOnSameLine(IfStmt statement, int lineNumberOfIfStatement) {
+        if (statement.hasParentNode()) {
+            Node parent = statement.getParentNode().get();
+            List<Node> children = parent.getChildNodes();
+            int indexOfIfStatement = children.indexOf(statement);
+            if (indexOfIfStatement+1 < children.size()) {
+                Node sibling = children.get(indexOfIfStatement+1);
+                return (sibling.hasRange() && sibling.getRange().get().begin.line == lineNumberOfIfStatement);
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param thenStatement
+     * @param lineNumberOfIfStatement
+     * @return true if if-statement has form if (cond) statement;
+     */
+    private boolean statementBodyIsOnSameLine(Statement thenStatement, int lineNumberOfIfStatement) {
+        int lineNumberOfThenStatement = -1;
+        if (thenStatement.getRange().isPresent()) {
+            lineNumberOfThenStatement = thenStatement.getRange().get().begin.line;
+        }
+        return lineNumberOfIfStatement == lineNumberOfThenStatement;
     }
 
     private Optional<String> getContainingClass(Node node) {

@@ -505,6 +505,15 @@ public class BugFinderTest {
     }
 
     @Test
+    public void allowIfOnSameLineOnlyOneStatement() {
+        String code = "@NoEqualsMethod class A { public void method(boolean b, ArrayList<Integer> lst) { if (b) lst.add(1); lst.add(2); } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+    }
+
+    @Test
     public void arrayEquals() {
         String code = "@NoEqualsMethod class A { public boolean method(int[] a, int[] b) { return a==b; } }";
         Analyser analyser = new Analyser();
