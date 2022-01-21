@@ -23,7 +23,7 @@ public class EqualsOperatorClass {
     public void method() {
         InnerClass i = new InnerClass(5);
         InnerClass i2 = new InnerClass(5);
-        System.out.println(i == i2);
+        boolean bo = i == i2;
     }
 
 }

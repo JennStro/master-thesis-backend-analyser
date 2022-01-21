@@ -134,7 +134,7 @@ public class BugFinderTest {
 
     @Test
     public void equalsOperatorOnObject() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -144,7 +144,7 @@ public class BugFinderTest {
 
     @Test
     public void notEqualsOperatorOnObject() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a!=b); } }";
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -154,7 +154,7 @@ public class BugFinderTest {
 
     @Test
     public void equalsOperatorOnPrimitive() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { System.out.println(a==b); } }";
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { boolean bo = a==b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -172,7 +172,7 @@ public class BugFinderTest {
 
     @Test
     public void equalsOperatorSuggestion() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a==b); } }";
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -184,7 +184,7 @@ public class BugFinderTest {
 
     @Test
     public void notEqualsOperatorSuggestion() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { System.out.println(a!=b); } }";
+        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
@@ -458,7 +458,7 @@ public class BugFinderTest {
 
     @Test
     public void integerDivisionTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if(a/b==1.4) {System.out.println(\"Success\");}} }";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -466,7 +466,7 @@ public class BugFinderTest {
 
     @Test
     public void integerDivisionCastingTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println((double)a/(double)b);} }";
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if((double)a/(double)b==1.4) {System.out.println(\"Success\");}} }";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
@@ -474,12 +474,25 @@ public class BugFinderTest {
 
     @Test
     public void integerDivisionSuggestionTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
+        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if(a/b==1.4) {System.out.println(\"Success\");}} }";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("(double)a/(double)b", error.getSuggestion().get());
+        Assertions.assertEquals("A", error.getContainingClass());
+    }
+
+    @Test
+    public void notAddErrorIfInPrintStatement() {
+        String codeIntegerDivision = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
+        Analyser analyser = new Analyser();
+        BugReport reportIntegerDivision  = analyser.analyse(codeIntegerDivision);
+        Assertions.assertTrue(reportIntegerDivision.getBugs().isEmpty());
+
+        String codeEqualsOperator = "@NoEqualsMethod class A { public static void method() {A a1 = new A(); A a2 = new A(); System.out.println(a1==a2);} }";
+        BugReport reportEqualsOperator = analyser.analyse(codeEqualsOperator);
+        Assertions.assertTrue(reportEqualsOperator.getBugs().isEmpty());
     }
 
 }

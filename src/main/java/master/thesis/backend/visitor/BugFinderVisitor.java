@@ -35,7 +35,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Expression left = expression.getLeft();
         Expression right = expression.getRight();
         if (operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-            if (!isInsideEqualsMethod(expression)) {
+            if (!isInsideEqualsMethod(expression) && !isInsidePrintStatement(expression)) {
                 try {
                     if (!isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right)) {
                         int lineNumber = -1;
@@ -86,15 +86,25 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
         }
         if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
-            try {
-                if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
-                    IntegerDivisionError integerDivisionError = new IntegerDivisionError();
-                    integerDivisionError.setLeftInteger(left.toString());
-                    integerDivisionError.setRightInteger(right.toString());
-                    report.addBug(integerDivisionError);
+            if (!isInsidePrintStatement(expression)) {
+                try {
+                    if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
+                        IntegerDivisionError integerDivisionError = new IntegerDivisionError();
+                        if (getContainingClass(expression).isPresent()) {
+                            integerDivisionError.setContainingClass(getContainingClass(expression).get());
+                        }
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        integerDivisionError.setLineNumber(lineNumber);
+                        integerDivisionError.setLeftInteger(left.toString());
+                        integerDivisionError.setRightInteger(right.toString());
+                        report.addBug(integerDivisionError);
+                    }
+                } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                    report.attach(unsolvedSymbolException);
                 }
-            } catch (UnsolvedSymbolException unsolvedSymbolException) {
-                report.attach(unsolvedSymbolException);
             }
         }
     }
@@ -121,6 +131,11 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private boolean isInsideEqualsMethod(Node node) {
         Optional<MethodDeclaration> methodParent = node.findAncestor(MethodDeclaration.class);
         return methodParent.isPresent() && methodParent.get().getNameAsString().equals("equals");
+    }
+
+    private boolean isInsidePrintStatement(Node node) {
+        Optional<MethodCallExpr> methodCallExprOptionalParent = node.findAncestor(MethodCallExpr.class);
+        return methodCallExprOptionalParent.isPresent() && (methodCallExprOptionalParent.get().getNameAsString().equals("println") || methodCallExprOptionalParent.get().getNameAsString().equals("print"));
     }
 
     /**

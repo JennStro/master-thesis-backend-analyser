@@ -1,3 +1,6 @@
+### :star: 2.1.0   
+New feature: Allow to print error in console
+
 ### :fire: 2.0.0   
 Breaking change: Remove `Ignoring return` error, `Bitwise operator` error.
 
