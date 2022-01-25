@@ -1,3 +1,6 @@
+### :bug: 2.2.1   
+Bug: Allow if-statement with one statement
+
 ### :star: 2.2.0  
 New feature: Add bitwise op, and enhance explanations
 

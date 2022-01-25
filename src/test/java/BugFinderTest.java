@@ -67,13 +67,12 @@ public class BugFinderTest {
     }
 
     @Test
-    public void ifWithoutBrackets() {
+    public void ifWithoutBracketsOneStatementAllowed() {
         String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
@@ -219,15 +218,12 @@ public class BugFinderTest {
     }
 
     @Test
-    public void ifWithoutBlockSuggestion() {
+    public void ifWithoutBlockOneStatementAllowed() {
         String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("if (true) {System.out.println(\"\");...}", error.getSuggestion().get());
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
@@ -556,6 +552,37 @@ public class BugFinderTest {
     @Test
     public void bitwiseOperatorOnNumbers() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { int a = 1 | 2; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void ifWithTwoStatementsWithSameIndentationNotAllowed() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n \t System.out.println(\"Hello\"); }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
+    }
+
+    @Test
+    public void ifWithOneStatementAndSiblingAllowed() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n System.out.println(\"Hello\"); }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void ifWithOneStatementOnSameLineAndSiblingAllowed() {
+        String code =
+                "@NoEqualsMethod class A { public A(int a, int b) { " +
+                "if (a==b) System.out.println(\"Hello\"); \n" +
+                "System.out.println(\"Hello\"); }}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();

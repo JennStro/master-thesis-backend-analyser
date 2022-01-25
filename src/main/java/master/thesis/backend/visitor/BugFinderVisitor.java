@@ -320,57 +320,46 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         }
         if (!thenStatementHasCurlyBraces) {
             int lineNumberOfIfStatement = -1;
+            int indentationThenStatement = -1;
+            int lineNumberOfThenStatement = -1;
+
             if (statement.getRange().isPresent()) {
                 lineNumberOfIfStatement = statement.getRange().get().begin.line;
             }
+            if (thenStatement.getRange().isPresent()) {
+                lineNumberOfThenStatement =  thenStatement.getRange().get().begin.line;
+                indentationThenStatement = thenStatement.getRange().get().begin.column;
+            }
 
-            if (!statementBodyIsOnSameLine(thenStatement, lineNumberOfIfStatement) || hasSiblingAndSiblingIsOnSameLine(statement, lineNumberOfIfStatement)) {
-                IfWithoutBracketsError error = new IfWithoutBracketsError();
-                if (getContainingClass(statement).isPresent()) {
-                    error.setContainingClass(getContainingClass(statement).get());
+            if (siblingOf(statement).isPresent()) {
+                Node sibling = siblingOf(statement).get();
+                int intendationSiblingStatement = sibling.getRange().get().begin.column;
+                int lineNumberOfSiblingStatement = sibling.getRange().get().begin.line;
+
+                if (indentationThenStatement == intendationSiblingStatement || lineNumberOfSiblingStatement == lineNumberOfIfStatement) {
+                    IfWithoutBracketsError error = new IfWithoutBracketsError();
+                    if (getContainingClass(statement).isPresent()) {
+                        error.setContainingClass(getContainingClass(statement).get());
+                    }
+                    error.setLineNumber(lineNumberOfIfStatement);
+                    error.setCondition(statement.getCondition().toString());
+                    error.setThenBranch(statement.getThenStmt().toString());
+                    report.addBug(error);
                 }
-                error.setLineNumber(lineNumberOfIfStatement);
-                error.setCondition(statement.getCondition().toString());
-                error.setThenBranch(statement.getThenStmt().toString());
-                report.addBug(error);
             }
         }
     }
 
-    /**
-     * Covers the case of
-     *
-     * if (cond) statement1; statement2;
-     *
-     * @param statement
-     * @param lineNumberOfIfStatement
-     * @return true if if-statement has form if (cond) statement1; statement2;
-     */
-    private boolean hasSiblingAndSiblingIsOnSameLine(IfStmt statement, int lineNumberOfIfStatement) {
+    private Optional<Node> siblingOf(IfStmt statement) {
         if (statement.hasParentNode()) {
             Node parent = statement.getParentNode().get();
             List<Node> children = parent.getChildNodes();
             int indexOfIfStatement = children.indexOf(statement);
             if (indexOfIfStatement+1 < children.size()) {
-                Node sibling = children.get(indexOfIfStatement+1);
-                return (sibling.hasRange() && sibling.getRange().get().begin.line == lineNumberOfIfStatement);
+               return Optional.of(children.get(indexOfIfStatement+1));
             }
         }
-        return false;
-    }
-
-    /**
-     *
-     * @param thenStatement
-     * @param lineNumberOfIfStatement
-     * @return true if if-statement has form if (cond) statement;
-     */
-    private boolean statementBodyIsOnSameLine(Statement thenStatement, int lineNumberOfIfStatement) {
-        int lineNumberOfThenStatement = -1;
-        if (thenStatement.getRange().isPresent()) {
-            lineNumberOfThenStatement = thenStatement.getRange().get().begin.line;
-        }
-        return lineNumberOfIfStatement == lineNumberOfThenStatement;
+        return Optional.empty();
     }
 
     private Optional<String> getContainingClass(Node node) {
