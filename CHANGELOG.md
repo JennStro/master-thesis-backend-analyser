@@ -1,3 +1,6 @@
+### :star: 2.2.0  
+New feature: Add bitwise op, and enhance explanations
+
 ### :bug: 2.1.2  
 Bug: Add error when two statements on same line if
 

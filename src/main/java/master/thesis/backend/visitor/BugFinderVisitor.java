@@ -141,6 +141,28 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
+
+        if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
+            try {
+                if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
+                    int lineNumber = -1;
+                    if (expression.getRange().isPresent()) {
+                        lineNumber = expression.getRange().get().begin.line;
+                    }
+                    BitwiseOperatorError error = new BitwiseOperatorError();
+                    if (getContainingClass(expression).isPresent()) {
+                        error.setContainingClass(getContainingClass(expression).get());
+                    }
+                    error.setLineNumber(lineNumber);
+                    error.setLeftOperand(left.toString());
+                    error.setRightOperand(right.toString());
+                    error.setOperator(operator.asString());
+                    report.addBug(error);
+                }
+            } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                report.attach(unsolvedSymbolException);
+            }
+        }
     }
 
     private boolean divisionResultsInInteger(Expression left, Expression right) {

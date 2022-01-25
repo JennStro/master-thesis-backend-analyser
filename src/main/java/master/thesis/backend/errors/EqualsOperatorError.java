@@ -50,9 +50,9 @@ public class EqualsOperatorError extends BaseError {
     @Override
     public String getWhat() {
         if (isNegated) {
-            return "In Python you could use \"!=\" to compare objects, but in Java we use \"!=\" to see if two objects are the same instance.";
+            return "In Python you could use \"!=\" to compare objects, but in Java we use the equals method to do this!";
         }
-        return "In Python you could use \"==\" to compare objects, but in Java we use \"==\" to see if two objects are the same instance.";
+        return "In Python you could use \"==\" to compare objects, but in Java we use the equals method to do this!";
     }
 
     @Override
