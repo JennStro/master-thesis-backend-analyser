@@ -1,3 +1,7 @@
+### :fire: 3.0.0   
+Breaking change: int division not allowed even though it evaluates to int 
+New feature: Allow print for bitwise
+
 ### :bug: 2.2.1   
 Bug: Allow if-statement with one statement
 

@@ -20,35 +20,6 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
 
-    private HashMap<String, Integer> env = new HashMap<>();
-
-    /**
-     * Save all declarations of integer in env
-     * @param decl
-     * @param arg
-     */
-    @Override
-    public void visit(VariableDeclarator decl, Void arg) {
-        super.visit(decl, arg);
-        if (decl.getInitializer().isPresent() && decl.getInitializer().get().isIntegerLiteralExpr()) {
-            env.put(decl.getName().asString(), Integer.parseInt(decl.getInitializer().get().toString()));
-        }
-    }
-
-    /**
-     * Save all updates or assignments of integer variables to env.
-     * @param assignExpr
-     * @param arg
-     */
-    @Override
-    public void visit(AssignExpr assignExpr, Void arg) {
-        super.visit(assignExpr, arg);
-        String variableName = assignExpr.getTarget().toString();
-        if (env.containsKey(variableName)) {
-            env.put(variableName,  Integer.parseInt(assignExpr.getValue().toString()));
-        }
-    }
-
     /**
      * Check that objects is not compared with the equals operator.
      *
@@ -121,20 +92,18 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
-                        if (!divisionResultsInInteger(left, right)) {
-                            IntegerDivisionError integerDivisionError = new IntegerDivisionError();
-                            if (getContainingClass(expression).isPresent()) {
-                                integerDivisionError.setContainingClass(getContainingClass(expression).get());
-                            }
-                            int lineNumber = -1;
-                            if (expression.getRange().isPresent()) {
-                                lineNumber = expression.getRange().get().begin.line;
-                            }
-                            integerDivisionError.setLineNumber(lineNumber);
-                            integerDivisionError.setLeftInteger(left.toString());
-                            integerDivisionError.setRightInteger(right.toString());
-                            report.addBug(integerDivisionError);
+                        IntegerDivisionError integerDivisionError = new IntegerDivisionError();
+                        if (getContainingClass(expression).isPresent()) {
+                            integerDivisionError.setContainingClass(getContainingClass(expression).get());
                         }
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        integerDivisionError.setLineNumber(lineNumber);
+                        integerDivisionError.setLeftInteger(left.toString());
+                        integerDivisionError.setRightInteger(right.toString());
+                        report.addBug(integerDivisionError);
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -143,30 +112,28 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         }
 
         if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
-            try {
-                if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
-                    int lineNumber = -1;
-                    if (expression.getRange().isPresent()) {
-                        lineNumber = expression.getRange().get().begin.line;
+            if (!isInsidePrintStatement(expression)) {
+                try {
+                    if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
+                        int lineNumber = -1;
+                        if (expression.getRange().isPresent()) {
+                            lineNumber = expression.getRange().get().begin.line;
+                        }
+                        BitwiseOperatorError error = new BitwiseOperatorError();
+                        if (getContainingClass(expression).isPresent()) {
+                            error.setContainingClass(getContainingClass(expression).get());
+                        }
+                        error.setLineNumber(lineNumber);
+                        error.setLeftOperand(left.toString());
+                        error.setRightOperand(right.toString());
+                        error.setOperator(operator.asString());
+                        report.addBug(error);
                     }
-                    BitwiseOperatorError error = new BitwiseOperatorError();
-                    if (getContainingClass(expression).isPresent()) {
-                        error.setContainingClass(getContainingClass(expression).get());
-                    }
-                    error.setLineNumber(lineNumber);
-                    error.setLeftOperand(left.toString());
-                    error.setRightOperand(right.toString());
-                    error.setOperator(operator.asString());
-                    report.addBug(error);
+                } catch (UnsolvedSymbolException unsolvedSymbolException) {
+                    report.attach(unsolvedSymbolException);
                 }
-            } catch (UnsolvedSymbolException unsolvedSymbolException) {
-                report.attach(unsolvedSymbolException);
             }
         }
-    }
-
-    private boolean divisionResultsInInteger(Expression left, Expression right) {
-        return env.get(left.toString()) % env.get(right.toString()) == 0;
     }
 
     /**
