@@ -35,7 +35,10 @@ public class BitwiseOperatorError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "In Python we use \"and\" and \"or\" to do logical operations, but in Java we use \"&&\" (and) and \"||\" (or)!";
+        if (this.operator != null) {
+            return "You are using the bitwise operator ("+ this.operator +")! In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
+        }
+        return "You are using the bitwise operator (\"&\" and \"|\")! In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
     }
 
     @Override

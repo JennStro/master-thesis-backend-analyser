@@ -26,7 +26,7 @@ public class SemiColonAfterIfError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "You have a semicolon (;) after an if-statement!";
+        return "You have a semicolon (;) after an if-statement! In Python we use a colon (:) here, but you don't need this after if-statement in Java!";
     }
 
     @Override
