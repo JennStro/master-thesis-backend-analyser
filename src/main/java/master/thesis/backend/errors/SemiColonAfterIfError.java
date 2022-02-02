@@ -14,7 +14,7 @@ public class SemiColonAfterIfError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.condition != null) {
-            return Optional.of("if (" + this.condition + ") { }");
+            return Optional.of("to remove the semicolon after the if-condition: if (" + this.condition + ") { // The rest of your code }");
         }
         return Optional.empty();
     }
@@ -31,7 +31,7 @@ public class SemiColonAfterIfError extends BaseError {
 
     @Override
     public Optional<String> getLink() {
-        return Optional.empty();
+        return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/semicolon");
     }
 
 }

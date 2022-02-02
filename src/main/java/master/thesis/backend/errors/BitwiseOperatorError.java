@@ -11,7 +11,7 @@ public class BitwiseOperatorError extends BaseError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.leftOperand != null && this.operator != null && this.rightOperand != null) {
-            return Optional.of(this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand);
+            return Optional.of("replacing " + this.operator + " with " + convertBitwiseOperatorToConditionalOperator(this.operator) + ": " + this.leftOperand + " " + convertBitwiseOperatorToConditionalOperator(this.operator) + " " + this.rightOperand);
         }
         return Optional.empty();
     }
@@ -36,14 +36,14 @@ public class BitwiseOperatorError extends BaseError {
     @Override
     public String getWhat() {
         if (this.operator != null) {
-            return "You are using the bitwise operator ("+ this.operator +")! In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
+            return "You are using the bitwise operator ("+ this.operator +"). In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
         }
-        return "You are using the bitwise operator (\"&\" and \"|\")! In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
+        return "You are using the bitwise operator (\"&\" and \"|\"). In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
     }
 
     @Override
     public Optional<String> getLink() {
-        return Optional.empty();
+        return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/bitwiseoperator");
     }
 
     private String convertBitwiseOperatorToConditionalOperator(String operator) {

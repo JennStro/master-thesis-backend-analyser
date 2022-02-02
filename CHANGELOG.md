@@ -1,3 +1,12 @@
+### :star: 3.3.0
+New feature: Make better suggestions
+
+### :star: 3.2.0
+New feature: Add more links for explanation
+
+### :star: 3.1.0
+New feature: Add better explanations
+
 ### :fire: 3.0.0   
 Breaking change: int division not allowed even though it evaluates to int 
 New feature: Allow print for bitwise

@@ -214,7 +214,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
 
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("if (true) { }", error.getSuggestion().get());
+        Assertions.assertEquals("to remove the semicolon after the if-condition: if (true) { // The rest of your code }", error.getSuggestion().get());
     }
 
     @Test
@@ -322,7 +322,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("InnerClass", error.getContainingClass());
-        Assertions.assertEquals("@Override public boolean equals(Object o) { }", error.getSuggestion().get());
+        Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { \\Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
     }
 
     @Test
@@ -371,7 +371,7 @@ public class BugFinderTest {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("IgnoreEqualsOnlyInnerClass", error.getContainingClass());
-        Assertions.assertEquals("@Override public boolean equals(Object o) { }", error.getSuggestion().get());
+        Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { \\Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
     }
 
     @Test
