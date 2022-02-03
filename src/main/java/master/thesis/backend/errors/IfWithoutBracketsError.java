@@ -32,7 +32,7 @@ public class IfWithoutBracketsError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "Java does not care about indentation like Python does! Java only cares about brackets, so you should always use brackets in an if-statement.";
+        return "You have an if without brackets! Java does not care about indentation like Python does, but brackets.";
     }
 
     @Override

@@ -1,3 +1,6 @@
+### :star: 3.4.0
+New feature: Make better suggestions
+
 ### :star: 3.3.0
 New feature: Make better suggestions
 

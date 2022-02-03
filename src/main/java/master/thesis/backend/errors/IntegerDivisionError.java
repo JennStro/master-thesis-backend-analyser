@@ -30,7 +30,7 @@ public class IntegerDivisionError extends BaseError {
 
     @Override
     public String getWhat() {
-        return "In Python, you could divide two integers and get a decimal as a result. But in Java we need to change the integers to decimals before we divide to get the same result!";
+        return "You are doing an integer division! In Python, you could divide two integers and get a decimal as a result. In Java we need to change the integers to decimals before we divide to get the same result.";
     }
 
     @Override
