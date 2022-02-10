@@ -55,5 +55,7 @@ public abstract class BaseError {
      */
     public abstract Optional<String> getLink();
 
+    public abstract String annotationName();
+
 
 }

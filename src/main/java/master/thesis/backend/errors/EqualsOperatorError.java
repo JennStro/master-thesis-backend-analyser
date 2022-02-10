@@ -59,4 +59,9 @@ public class EqualsOperatorError extends BaseError {
     public Optional<String> getLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/equalsoperator");
     }
+
+    @Override
+    public String annotationName() {
+        return "@EqualsOperatorOnObjectAllowed";
+    }
 }

@@ -37,4 +37,9 @@ public class IntegerDivisionError extends BaseError {
     public Optional<String> getLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/integerdivision");
     }
+
+    @Override
+    public String annotationName() {
+        return "@IntegerDivisionAllowed";
+    }
 }

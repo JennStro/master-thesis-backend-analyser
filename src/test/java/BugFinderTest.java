@@ -319,10 +319,7 @@ public class BugFinderTest {
         }
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("InnerClass", error.getContainingClass());
-        Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { \\Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
@@ -574,6 +571,17 @@ public class BugFinderTest {
                 "@NoEqualsMethod class A { public A(int a, int b) { " +
                 "if (a==b) System.out.println(\"Hello\"); \n" +
                 "System.out.println(\"Hello\"); }}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void ifStatementSemicolonAllowedAnnotation() {
+        String code =
+                "@NoEqualsMethod @IfStatementWithSemicolonAllowed class A { public A(int a, int b) { " +
+                        "if (a==b); System.out.println(\"Hello\");}}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();

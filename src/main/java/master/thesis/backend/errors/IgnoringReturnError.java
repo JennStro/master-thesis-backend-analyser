@@ -38,4 +38,9 @@ public class IgnoringReturnError extends BaseError {
     public Optional<String> getLink() {
         return Optional.empty();
     }
+
+    @Override
+    public String annotationName() {
+        return "@IgnoreReturnValueAllowed";
+    }
 }

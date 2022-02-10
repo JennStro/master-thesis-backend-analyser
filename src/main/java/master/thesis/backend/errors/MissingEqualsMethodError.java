@@ -24,4 +24,9 @@ public class MissingEqualsMethodError extends BaseError {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/equalsoperator");
     }
 
+    @Override
+    public String annotationName() {
+        return "@NoEqualsMethod";
+    }
+
 }

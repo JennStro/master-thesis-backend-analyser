@@ -40,4 +40,9 @@ public class IfWithoutBracketsError extends BaseError {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/ifstatement");
     }
 
+    @Override
+    public String annotationName() {
+        return "@IfWithoutBracketsAllowed";
+    }
+
 }

@@ -9,6 +9,8 @@ public class BugReport {
     private String className;
     private Throwable e;
 
+    public void setBugs(ArrayList<BaseError> bugs) { this.bugs = bugs;};
+
     public int getNumberOfBugs() {
         return bugs.size();
     }

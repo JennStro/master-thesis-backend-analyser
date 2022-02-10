@@ -40,4 +40,9 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
         return Optional.empty();
     }
 
+    @Override
+    public String annotationName() {
+        return "@MissingInitializerAllowed";
+    }
+
 }

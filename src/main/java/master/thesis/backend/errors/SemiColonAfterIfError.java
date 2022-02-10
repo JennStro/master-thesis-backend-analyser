@@ -34,4 +34,9 @@ public class SemiColonAfterIfError extends BaseError {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/semicolon");
     }
 
+    @Override
+    public String annotationName() {
+        return "@IfStatementWithSemicolonAllowed";
+    }
+
 }

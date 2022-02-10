@@ -46,6 +46,11 @@ public class BitwiseOperatorError extends BaseError {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/bitwiseoperator");
     }
 
+    @Override
+    public String annotationName() {
+        return "@BitwiseOperationAllowed";
+    }
+
     private String convertBitwiseOperatorToConditionalOperator(String operator) {
         if ("&".equals(operator)) {
             return "&&";

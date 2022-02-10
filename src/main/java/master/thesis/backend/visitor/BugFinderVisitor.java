@@ -12,13 +12,14 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
+    private HashSet<String> errorsToIgnore = new HashSet<>();
 
     /**
      * Check that objects is not compared with the equals operator.
@@ -272,7 +273,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Statement thenStatement = statement.getThenStmt();
         boolean thenStatementIsEmpty = thenStatement.getMetaModel().getTypeName().equals("EmptyStmt");
         boolean thenStatementHasCurlyBraces = thenStatement instanceof BlockStmt;
-        if (thenStatementIsEmpty) {
+        if (thenStatementIsEmpty && !errorsToIgnore.contains("@IfStatementWithSemicolonAllowed")) {
+            System.out.println(errorsToIgnore);
             int lineNumber = -1;
             if (statement.getRange().isPresent()) {
                 lineNumber = statement.getRange().get().begin.line;
@@ -285,7 +287,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             error.setCondition(statement.getCondition().toString());
             report.addBug(error);
         }
-        if (!thenStatementHasCurlyBraces) {
+        else if (!thenStatementHasCurlyBraces) {
             int lineNumberOfIfStatement = -1;
             int indentationThenStatement = -1;
             int lineNumberOfThenStatement = -1;
@@ -339,6 +341,24 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     }
 
     public BugReport getReport() {
+        ArrayList<BaseError> bugs = report.getBugs();
+        ArrayList<BaseError> whiteListedBugs = new ArrayList<>();
+        if (bugs.isEmpty()) {return report;}
+        for (BaseError bug : bugs) {
+            if (!errorsToIgnore.contains(bug.annotationName())) {
+                whiteListedBugs.add(bug);
+            }
+        }
+        report.setBugs(whiteListedBugs);
         return report;
+    }
+
+    @Override
+    public void visit(MarkerAnnotationExpr annotationExpr, Void arg) {
+        super.visit(annotationExpr, arg);
+        if (!annotationExpr.toString().equals("@NoEqualsMethod")) {
+            errorsToIgnore.add(annotationExpr.toString());
+        }
+        System.out.println(annotationExpr);
     }
 }
