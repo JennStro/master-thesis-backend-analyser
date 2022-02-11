@@ -319,7 +319,7 @@ public class BugFinderTest {
         }
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
-        Assertions.assertTrue(report.getBugs().isEmpty());
+        Assertions.assertFalse(report.getBugs().isEmpty());
     }
 
     @Test
@@ -582,6 +582,15 @@ public class BugFinderTest {
         String code =
                 "@NoEqualsMethod @IfStatementWithSemicolonAllowed class A { public A(int a, int b) { " +
                         "if (a==b); System.out.println(\"Hello\");}}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void bitwiseOperatorAnnotation() {
+        String code = "@NoEqualsMethod @BitwiseOperationAllowed class A { public A(int a, int b) { boolean a = true | false; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();

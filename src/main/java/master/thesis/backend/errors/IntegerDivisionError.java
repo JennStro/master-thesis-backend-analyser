@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class IntegerDivisionError extends BaseError {
@@ -40,6 +42,6 @@ public class IntegerDivisionError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@IntegerDivisionAllowed";
+        return AnnotationNames.INTEGER_DIVISION_ERROR;
     }
 }

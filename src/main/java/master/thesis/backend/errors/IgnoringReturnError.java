@@ -1,6 +1,8 @@
 package master.thesis.backend.errors;
 
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class IgnoringReturnError extends BaseError {
@@ -41,6 +43,6 @@ public class IgnoringReturnError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@IgnoreReturnValueAllowed";
+        return AnnotationNames.IGNORING_RETURN_ERROR;
     }
 }

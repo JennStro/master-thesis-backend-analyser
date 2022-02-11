@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class FieldDeclarationWithoutInitializerError extends BaseError {
@@ -42,7 +44,7 @@ public class FieldDeclarationWithoutInitializerError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@MissingInitializerAllowed";
+        return AnnotationNames.FIELD_DECL_NO_INITIALIZER_ERROR;
     }
 
 }

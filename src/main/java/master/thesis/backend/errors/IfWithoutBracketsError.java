@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class IfWithoutBracketsError extends BaseError {
@@ -42,7 +44,7 @@ public class IfWithoutBracketsError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@IfWithoutBracketsAllowed";
+        return AnnotationNames.IF_NO_BRACKETS_ERROR;
     }
 
 }

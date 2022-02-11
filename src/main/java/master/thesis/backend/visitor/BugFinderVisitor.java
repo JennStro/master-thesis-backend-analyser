@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
+import master.thesis.backend.annotations.AnnotationNames;
 import master.thesis.backend.errors.*;
 
 import java.util.ArrayList;
@@ -273,8 +274,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Statement thenStatement = statement.getThenStmt();
         boolean thenStatementIsEmpty = thenStatement.getMetaModel().getTypeName().equals("EmptyStmt");
         boolean thenStatementHasCurlyBraces = thenStatement instanceof BlockStmt;
-        if (thenStatementIsEmpty && !errorsToIgnore.contains("@IfStatementWithSemicolonAllowed")) {
-            System.out.println(errorsToIgnore);
+        if (thenStatementIsEmpty && !errorsToIgnore.contains(AnnotationNames.SEMICOLON_AFTER_IF_ERROR)) {
             int lineNumber = -1;
             if (statement.getRange().isPresent()) {
                 lineNumber = statement.getRange().get().begin.line;
@@ -287,7 +287,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             error.setCondition(statement.getCondition().toString());
             report.addBug(error);
         }
-        else if (!thenStatementHasCurlyBraces) {
+        else if (!thenStatementHasCurlyBraces && !errorsToIgnore.contains(AnnotationNames.IF_NO_BRACKETS_ERROR)) {
             int lineNumberOfIfStatement = -1;
             int indentationThenStatement = -1;
             int lineNumberOfThenStatement = -1;
@@ -359,6 +359,5 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (!annotationExpr.toString().equals("@NoEqualsMethod")) {
             errorsToIgnore.add(annotationExpr.toString());
         }
-        System.out.println(annotationExpr);
     }
 }

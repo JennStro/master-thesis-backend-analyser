@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class EqualsOperatorError extends BaseError {
@@ -62,6 +64,6 @@ public class EqualsOperatorError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@EqualsOperatorOnObjectAllowed";
+        return AnnotationNames.EQUALS_OPERATOR_ERROR;
     }
 }

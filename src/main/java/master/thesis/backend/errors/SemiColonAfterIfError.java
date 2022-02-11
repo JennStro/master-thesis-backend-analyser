@@ -1,5 +1,7 @@
 package master.thesis.backend.errors;
 
+import master.thesis.backend.annotations.AnnotationNames;
+
 import java.util.Optional;
 
 public class SemiColonAfterIfError extends BaseError {
@@ -36,7 +38,7 @@ public class SemiColonAfterIfError extends BaseError {
 
     @Override
     public String annotationName() {
-        return "@IfStatementWithSemicolonAllowed";
+        return AnnotationNames.SEMICOLON_AFTER_IF_ERROR;
     }
 
 }
