@@ -1,3 +1,7 @@
+### :star: 3.5.0
+New feature: Add annotations for ignoring errors
+Bug: Remove duplicate if-error
+
 ### :star: 3.4.0
 New feature: Make better suggestions
 
