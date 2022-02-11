@@ -616,4 +616,22 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void equalsOperatorOnObjectAnnotation() {
+        String code = "@NoEqualsMethod @EqualsOperatorOnObjectAllowed class A { public A(Object a, Object b) { boolean bo = a==b; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void integerDivisionAnnotation() {
+        String code = "@NoEqualsMethod @IntegerDivisionAllowed  class A { public A(int a, int b) { int bo = a/b; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }
