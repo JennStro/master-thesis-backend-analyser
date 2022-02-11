@@ -305,7 +305,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 int intendationSiblingStatement = sibling.getRange().get().begin.column;
                 int lineNumberOfSiblingStatement = sibling.getRange().get().begin.line;
 
-                if (indentationThenStatement == intendationSiblingStatement || lineNumberOfSiblingStatement == lineNumberOfIfStatement) {
+                if (indentationThenStatement == intendationSiblingStatement || lineNumberOfSiblingStatement == lineNumberOfIfStatement || lineNumberOfSiblingStatement == lineNumberOfThenStatement) {
                     IfWithoutBracketsError error = new IfWithoutBracketsError();
                     if (getContainingClass(statement).isPresent()) {
                         error.setContainingClass(getContainingClass(statement).get());

@@ -597,4 +597,14 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void ifStatementOnSameLine() {
+        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
+    }
+
 }
