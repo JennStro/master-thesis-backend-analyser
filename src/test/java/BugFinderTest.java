@@ -607,4 +607,13 @@ public class BugFinderTest {
         Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
     }
 
+    @Test
+    public void ifStatementOnSameLineAnnotation() {
+        String code = "@NoEqualsMethod @IfWithoutBracketsAllowed class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }
