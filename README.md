@@ -27,3 +27,15 @@ Maven: Add in your `pom.xml` file:
 ## Architecture 
 
 ![arcitecture](https://user-images.githubusercontent.com/48728008/151001283-69cd144b-766d-4972-97be-93d5a03f28a8.png)
+
+## Settings 
+
+The errors can be ignored by adding annotations to the file that is being analysed. 
+
+Equals operator on objects: ```@EqualsOperatorOnObjectAllowed```   
+Bitwise operator on boolean: ``@BitwiseOperationAllowed``   
+If without brackets: ``@IfWithoutBracketsAllowed``   
+Integer division: ``@IntegerDivisionAllowed``   
+Missing equals method: ```@NoEqualsMethod```   
+Semi colon after if: ```@IfStatementWithSemicolonAllowed```
+
