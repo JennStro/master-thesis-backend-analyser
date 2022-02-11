@@ -65,7 +65,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     // exception. If not, we add the bug.
                     boolean leftIsObjectReference = left.isNameExpr();
                     boolean rightIsObjectReference = right.isNameExpr();
-                    if (leftIsObjectReference && rightIsObjectReference) {
+                    if (!errorsToIgnore.contains(AnnotationNames.EQUALS_OPERATOR_ERROR) && leftIsObjectReference && rightIsObjectReference) {
                         int lineNumber = -1;
                         if (expression.getRange().isPresent()) {
                             lineNumber = expression.getRange().get().begin.line;
@@ -90,7 +90,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
 
         }
-        if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
+        if (!errorsToIgnore.contains(AnnotationNames.INTEGER_DIVISION_ERROR) && operator.equals(BinaryExpr.Operator.DIVIDE)) {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
@@ -113,7 +113,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
         }
 
-        if (operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
+        if (!errorsToIgnore.contains(AnnotationNames.BITWISE_OPERATOR_ERROR) && operator.equals(BinaryExpr.Operator.BINARY_OR) || operator.equals(BinaryExpr.Operator.BINARY_AND)) {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
