@@ -32,10 +32,28 @@ Maven: Add in your `pom.xml` file:
 
 The errors can be ignored by adding annotations to the file that is being analysed. 
 
-Equals operator on objects: ```@EqualsOperatorOnObjectAllowed```   
-Bitwise operator on boolean: ``@BitwiseOperationAllowed``   
-If without brackets: ``@IfWithoutBracketsAllowed``   
-Integer division: ``@IntegerDivisionAllowed``   
-Missing equals method: ```@NoEqualsMethod```   
-Semi colon after if: ```@IfStatementWithSemicolonAllowed```
+**Equals operator on objects:**
+```
+@EqualsOperatorOnObjectAllowed
+```   
+**Bitwise operator on boolean:** 
+```
+@BitwiseOperationAllowed
+``` 
+**If without brackets:**
+```
+@IfWithoutBracketsAllowed
+```   
+**Integer division:** 
+```
+@IntegerDivisionAllowed
+```   
+**Missing equals method:** 
+```
+@NoEqualsMethod
+```   
+**Semi colon after if:** 
+```
+@IfStatementWithSemicolonAllowed
+```
 
