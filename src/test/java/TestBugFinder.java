@@ -13,7 +13,7 @@ import master.thesis.backend.visitor.BugFinderVisitor;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class BugFinderTest {
+public class TestBugFinder {
 
     private BugFinderVisitor visitor = new BugFinderVisitor();
 
