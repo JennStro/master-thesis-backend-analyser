@@ -1,3 +1,6 @@
+### :bug: 3.5.1   
+Bug: Fix bug in NEM suggestion
+
 ### :star: 3.5.0
 New feature: Add annotations for ignoring errors
 Bug: Remove duplicate if-error

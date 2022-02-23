@@ -368,7 +368,7 @@ public class TestBugFinder {
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("IgnoreEqualsOnlyInnerClass", error.getContainingClass());
-        Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { \\Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
+        Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { // Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
     }
 
     @Test
