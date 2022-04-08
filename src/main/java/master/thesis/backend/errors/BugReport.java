@@ -6,13 +6,9 @@ import java.util.Optional;
 public class BugReport {
 
     private ArrayList<BaseError> bugs = new ArrayList<>();
-    private Throwable e;
+    private Throwable exceptionFromJavaParser;
 
     public void setBugs(ArrayList<BaseError> bugs) { this.bugs = bugs;}
-
-    public int getNumberOfBugs() {
-        return bugs.size();
-    }
 
     public ArrayList<BaseError> getBugs() {
         return bugs;
@@ -22,14 +18,14 @@ public class BugReport {
         this.bugs.add(error);
     }
 
-    public void attach(Throwable e) {
-        this.e = e;
+    public void attach(Throwable exceptionFromJavaParser) {
+        this.exceptionFromJavaParser = exceptionFromJavaParser;
     }
 
     public Optional<Throwable> getException() {
-        if (e == null) {
+        if (exceptionFromJavaParser == null) {
             return Optional.empty();
         }
-        return Optional.of(e);
+        return Optional.of(exceptionFromJavaParser);
     }
 }
