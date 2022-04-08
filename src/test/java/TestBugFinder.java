@@ -95,43 +95,6 @@ public class TestBugFinder {
     }
 
     @Test
-    public void fieldNoDeclaration() {
-        String code = "@NoEqualsMethod class A { int a; }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        Assertions.assertTrue(report.getBugs().get(0) instanceof FieldDeclarationWithoutInitializerError);
-    }
-
-    @Test
-    public void fieldWithDeclaration() {
-        String code = "@NoEqualsMethod class A { int a = 5; }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertTrue(report.getBugs().isEmpty());
-    }
-
-    @Test
-    public void fieldWithDeclarationInConstructor() {
-        String code = "@NoEqualsMethod class A { int a; public A(int a) {this.a=a;} }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertTrue(report.getBugs().isEmpty());
-    }
-
-    @Test
-    public void fieldNoDeclarationIgnored() {
-        String code = "@NoEqualsMethod class A { @NoInitialization int a; }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertTrue(report.getBugs().isEmpty());
-    }
-
-    @Test
     public void equalsOperatorOnObject() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
@@ -191,18 +154,6 @@ public class TestBugFinder {
 
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("!a.equals(b)", error.getSuggestion().get());
-    }
-
-    @Test
-    public void uninitializedFieldSuggestion() {
-        String code = "@NoEqualsMethod class A { int a; }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("public A(int a) {\tthis.a = a;}", error.getSuggestion().get());
     }
 
     @Test
@@ -323,24 +274,6 @@ public class TestBugFinder {
     }
 
     @Test
-    public void noInitInnerClass() {
-        String path = "src/test/java/SecondTestClass.java";
-        CompilationUnit compilationUnit = null;
-        try {
-            compilationUnit = StaticJavaParser.parse(new File(path));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("InnerClass", error.getContainingClass());
-        Assertions.assertEquals("public InnerClass(int number) {\tthis.number = number;}", error.getSuggestion().get());
-        Assertions.assertEquals(9, error.getLineNumber());
-    }
-
-    @Test
     public void ignoreEqualsInnerClass() {
         String path = "src/test/java/IgnoreEqualsOnlyInnerClass.java";
         CompilationUnit compilationUnit = null;
@@ -372,23 +305,6 @@ public class TestBugFinder {
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("EqualsOperatorClass", error.getContainingClass());
         Assertions.assertEquals("i.equals(i2)", error.getSuggestion().get());
-    }
-
-    @Test
-    public void fieldInitClass() {
-        String path = "src/test/java/FieldInitClass.java";
-        CompilationUnit compilationUnit = null;
-        try {
-            compilationUnit = StaticJavaParser.parse(new File(path));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("FieldInitClass", error.getContainingClass());
-        Assertions.assertEquals("public FieldInitClass(ArrayList<String> list) {\tthis.list = list;}", error.getSuggestion().get());
     }
 
     @Test

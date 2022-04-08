@@ -184,9 +184,6 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         boolean classHasEqualsMethod = false;
         boolean shouldIgnoreNoEqualsMethodError = false;
 
-        ArrayList<VariableDeclarator> uninitializedFieldDeclarations = new ArrayList<>();
-        ArrayList<VariableDeclarator> initializedFieldDeclarations = new ArrayList<>();
-
         for (Node child : children) {
 
             if (child instanceof MarkerAnnotationExpr) {
@@ -200,67 +197,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     classHasEqualsMethod = true;
                 }
             }
-            if (child instanceof FieldDeclaration) {
-                FieldDeclaration field = (FieldDeclaration) child;
-                for (VariableDeclarator varDecl : field.getVariables()) {
-                    if (varDecl.getInitializer().isEmpty()) {
-                        if (!field.toString().contains("@NoInitialization")) {
-                            uninitializedFieldDeclarations.add(varDecl);
-                        }
-                    }
-                }
-            }
-            if (child instanceof ConstructorDeclaration) {
-                ConstructorDeclaration constructor = (ConstructorDeclaration) child;
-                for (Statement constructorChild : constructor.getBody().getStatements()) {
-                    if (getFieldAccessExpr(constructorChild).isPresent()) {
-                        FieldAccessExpr fieldAccessExpr = getFieldAccessExpr(constructorChild).get();
-                        for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
-                            if (fieldAccessExpr.getNameAsString().equals(uninitializedFieldDeclaration.getNameAsString())) {
-                                initializedFieldDeclarations.add(uninitializedFieldDeclaration);
-                            }
-                        }
-                    }
-                }
-            }
         }
         if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError && !declaration.isInterface() && !declaration.isAbstract()) {
             MissingEqualsMethodError error = new MissingEqualsMethodError();
             error.setContainingClass(declaration.getNameAsString());
             report.addBug(error);
         }
-        uninitializedFieldDeclarations.removeAll(initializedFieldDeclarations);
-        for (VariableDeclarator uninitializedFieldDeclaration : uninitializedFieldDeclarations) {
-            int lineNumber = -1;
-            if (uninitializedFieldDeclaration.getRange().isPresent()) {
-                lineNumber = uninitializedFieldDeclaration.getRange().get().begin.line;
-            }
-            FieldDeclarationWithoutInitializerError error = new FieldDeclarationWithoutInitializerError();
-            error.setLineNumber(lineNumber);
-            error.setContainingClass(declaration.getNameAsString());
-            error.setFieldVariableName(uninitializedFieldDeclaration.getNameAsString());
-            error.setFieldVariableType(uninitializedFieldDeclaration.getType().asString());
-            report.addBug(error);
-        }
 
-    }
-
-    private Optional<FieldAccessExpr> getFieldAccessExpr(Statement constructorStatement) {
-        if (constructorStatement.isExpressionStmt()) {
-            for (Node expression : constructorStatement.getChildNodes()) {
-                if (expression instanceof AssignExpr) {
-                    for (Node fieldAccessExpressionCandidate : expression.getChildNodes()) {
-                        if (fieldAccessExpressionCandidate instanceof FieldAccessExpr) {
-                            FieldAccessExpr fieldAccessExpr = (FieldAccessExpr) fieldAccessExpressionCandidate;
-                            return Optional.of(fieldAccessExpr);
-                        } else {
-                            return Optional.empty();
-                        }
-                    }
-                }
-            }
-        }
-        return Optional.empty();
     }
 
     /**
