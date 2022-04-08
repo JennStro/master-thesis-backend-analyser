@@ -1,7 +1,6 @@
-import master.thesis.backend.annotations.NoInitialization;
+
 
 import java.util.ArrayList;
-
 public class BitwiseOperatorClass {
 
     public void method(Bar bar) {
@@ -14,7 +13,6 @@ public class BitwiseOperatorClass {
     public static class Bar {
 
         private boolean hasBeenCalled = false;
-        @NoInitialization
         private ArrayList<String> drinks;
 
         public boolean barHasMoreThenFiveDrinks() {
