@@ -31,12 +31,12 @@ public class IntegerDivisionError extends BaseError {
     }
 
     @Override
-    public String getWhat() {
+    public String getCauseOfError() {
         return "You are doing an integer division! In Python, you could divide two integers and get a decimal as a result. In Java we need to change the integers to decimals before we divide to get the same result.";
     }
 
     @Override
-    public Optional<String> getLink() {
+    public Optional<String> getMoreInfoLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/integerdivision");
     }
 

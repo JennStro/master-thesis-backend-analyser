@@ -50,7 +50,7 @@ public class EqualsOperatorError extends BaseError {
     }
 
     @Override
-    public String getWhat() {
+    public String getCauseOfError() {
         if (isNegated) {
             return "You are using \"!=\" to compare objects! In Python you could do this, but in Java we use the equals method.";
         }
@@ -58,7 +58,7 @@ public class EqualsOperatorError extends BaseError {
     }
 
     @Override
-    public Optional<String> getLink() {
+    public Optional<String> getMoreInfoLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/equalsoperator");
     }
 

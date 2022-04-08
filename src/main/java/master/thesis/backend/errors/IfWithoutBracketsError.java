@@ -33,12 +33,12 @@ public class IfWithoutBracketsError extends BaseError {
     }
 
     @Override
-    public String getWhat() {
+    public String getCauseOfError() {
         return "You have an if without brackets! Java does not care about indentation like Python does, but brackets.";
     }
 
     @Override
-    public Optional<String> getLink() {
+    public Optional<String> getMoreInfoLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/ifstatement");
     }
 

@@ -36,7 +36,7 @@ public class BitwiseOperatorError extends BaseError {
     }
 
     @Override
-    public String getWhat() {
+    public String getCauseOfError() {
         if (this.operator != null) {
             return "You are using the bitwise operator ("+ this.operator +"). In Python we use \"and\" and \"or\" as boolean operators, but in Java we use \"&&\" (and) and \"||\" (or)!";
         }
@@ -44,7 +44,7 @@ public class BitwiseOperatorError extends BaseError {
     }
 
     @Override
-    public Optional<String> getLink() {
+    public Optional<String> getMoreInfoLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/bitwiseoperator");
     }
 

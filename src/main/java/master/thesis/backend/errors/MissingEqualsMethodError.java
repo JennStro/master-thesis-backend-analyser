@@ -17,12 +17,12 @@ public class MissingEqualsMethodError extends BaseError {
     }
 
     @Override
-    public String getWhat() {
+    public String getCauseOfError() {
         return "The equals method is missing! If you do not implement the equals method of a class, it will use the default equals method of class Object.";
     }
 
     @Override
-    public Optional<String> getLink() {
+    public Optional<String> getMoreInfoLink() {
         return Optional.of("https://master-thesis-frontend-prod.herokuapp.com/equalsoperator");
     }
 

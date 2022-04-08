@@ -47,13 +47,13 @@ public abstract class BaseError {
      * @return a string about what caused the error.
      * For example, an EqualsOperatorError is caused by using == instead of .equals on an object.
      */
-    public abstract String getWhat();
+    public abstract String getCauseOfError();
 
     /**
      *
      * @return a string with more info about the error
      */
-    public abstract Optional<String> getLink();
+    public abstract Optional<String> getMoreInfoLink();
 
     public abstract String annotationName();
 
