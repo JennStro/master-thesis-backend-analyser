@@ -620,4 +620,13 @@ public class TestBugFinder {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+    @Test
+    public void shouldIgnoreNoEqualsMethodWhenAbstractClass() {
+        String code = "abstract class A {}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        BugReport report = visitor.getReport();
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
 }
