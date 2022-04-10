@@ -1,7 +1,5 @@
 package master.thesis.backend.errors;
 
-import master.thesis.backend.annotations.AnnotationNames;
-
 import java.util.Optional;
 
 public class BitwiseOperatorError extends BaseError {
@@ -49,8 +47,8 @@ public class BitwiseOperatorError extends BaseError {
     }
 
     @Override
-    public String annotationName() {
-        return AnnotationNames.BITWISE_OPERATOR_ERROR;
+    public String getName() {
+        return "BitwiseOperatorError";
     }
 
     private String convertBitwiseOperatorToConditionalOperator(String operator) {

@@ -5,6 +5,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.analyser.Analyser;
 import master.thesis.backend.errors.*;
+import master.thesis.backend.visitor.AnnotationFinder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -135,11 +136,8 @@ public class TestBugFinder {
     @Test
     public void equalsOperatorSuggestion() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
-
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("a.equals(b)", error.getSuggestion().get());
     }
@@ -159,11 +157,8 @@ public class TestBugFinder {
     @Test
     public void semiAfterIfSuggestion() {
         String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
-
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("to remove the semicolon after the if-condition: if (true) { // The rest of your code }", error.getSuggestion().get());
     }
@@ -223,9 +218,7 @@ public class TestBugFinder {
     @Test
     public void unresolvedVariableExceptionEqualsOperator() {
         String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b==b1) {return b.toString();} } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("b.equals(b1)", error.getSuggestion().get());
@@ -242,7 +235,7 @@ public class TestBugFinder {
     }
 
     @Test
-    public void lineNumber() {
+    public void shouldFindEqualsOperatorErrorOnLineSix() {
         String code = "@NoEqualsMethod class A { \n" +
                 "   @NoEqualsMethod class Bar {  } \n" +
                 "   public boolean method() { \n" +
@@ -251,9 +244,7 @@ public class TestBugFinder {
                 "        return b==b2; " +
                 "   } " +
                 "}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals(6, error.getLineNumber());
@@ -268,6 +259,9 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        annotationVisitor.visit(compilationUnit, null);
+        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -299,6 +293,9 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        annotationVisitor.visit(compilationUnit, null);
+        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -316,6 +313,9 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        annotationVisitor.visit(compilationUnit, null);
+        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -402,9 +402,7 @@ public class TestBugFinder {
     @Test
     public void allowIfOnSameLineOnlyOneStatement() {
         String code = "@NoEqualsMethod class A { public void method(boolean b, ArrayList<Integer> lst) { if (b) lst.add(1); lst.add(2); } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
     }
 
@@ -422,9 +420,7 @@ public class TestBugFinder {
     @Test
     public void bitwiseAndOperator() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 & b==0) {} } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof BitwiseOperatorError);
     }
@@ -451,9 +447,7 @@ public class TestBugFinder {
     @Test
     public void ifWithTwoStatementsWithSameIndentationNotAllowed() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n \t System.out.println(\"Hello\"); }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
     }
@@ -484,27 +478,22 @@ public class TestBugFinder {
         String code =
                 "@NoEqualsMethod @IfStatementWithSemicolonAllowed class A { public A(int a, int b) { " +
                         "if (a==b); System.out.println(\"Hello\");}}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void bitwiseOperatorAnnotation() {
         String code = "@NoEqualsMethod @BitwiseOperationAllowed class A { public A(int a, int b) { boolean a = true | false; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void ifStatementOnSameLine() {
+    public void shouldGiveErrorWhenSiblingOfIfIsOnSameLine() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
     }
@@ -512,27 +501,21 @@ public class TestBugFinder {
     @Test
     public void ifStatementOnSameLineAnnotation() {
         String code = "@NoEqualsMethod @IfWithoutBracketsAllowed class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void equalsOperatorOnObjectAnnotation() {
         String code = "@NoEqualsMethod @EqualsOperatorOnObjectAllowed class A { public A(Object a, Object b) { boolean bo = a==b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void integerDivisionAnnotation() {
-        String code = "@NoEqualsMethod @IntegerDivisionAllowed  class A { public A(int a, int b) { int bo = a/b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+    public void shouldIgnoreErrorWithIntegerDivisionAnnotation() {
+        String code = "@NoEqualsMethod @IntegerDivisionAllowed class A { public A(int a, int b) { int bo = a/b; } }";
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 

@@ -55,7 +55,6 @@ public abstract class BaseError {
      */
     public abstract Optional<String> getMoreInfoLink();
 
-    public abstract String annotationName();
-
+    public abstract String getName();
 
 }

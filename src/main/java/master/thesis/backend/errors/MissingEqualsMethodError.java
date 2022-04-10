@@ -1,7 +1,5 @@
 package master.thesis.backend.errors;
 
-import master.thesis.backend.annotations.AnnotationNames;
-
 import java.util.Optional;
 
 public class MissingEqualsMethodError extends BaseError {
@@ -27,8 +25,8 @@ public class MissingEqualsMethodError extends BaseError {
     }
 
     @Override
-    public String annotationName() {
-        return AnnotationNames.MISSING_EQUALS_METHOD_ERROR;
+    public String getName() {
+        return "MissingEqualsMethodError";
     }
 
 }
