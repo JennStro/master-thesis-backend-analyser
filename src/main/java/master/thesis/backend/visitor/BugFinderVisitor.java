@@ -106,10 +106,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         if (getContainingClass(expression).isPresent()) {
                             integerDivisionError.setContainingClass(getContainingClass(expression).get());
                         }
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
+                        int lineNumber = getLineNumberFrom(expression);
                         integerDivisionError.setLineNumber(lineNumber);
                         integerDivisionError.setLeftInteger(left.toString());
                         integerDivisionError.setRightInteger(right.toString());
@@ -127,10 +124,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
+                        int lineNumber = getLineNumberFrom(expression);
                         BitwiseOperatorError error = new BitwiseOperatorError();
                         if (getContainingClass(expression).isPresent()) {
                             error.setContainingClass(getContainingClass(expression).get());
@@ -159,6 +153,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Expression left = expression.getLeft();
         Expression right = expression.getRight();
         return !isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right);
+    }
+
+    /**
+     *
+     * @param expression
+     * @return -1 if not found, else the line number of the expression
+     */
+    private int getLineNumberFrom(BinaryExpr expression) {
+        int lineNumber = -1;
+        if (expression.getRange().isPresent()) {
+            lineNumber = expression.getRange().get().begin.line;
+        }
+        return lineNumber;
     }
 
     /**
