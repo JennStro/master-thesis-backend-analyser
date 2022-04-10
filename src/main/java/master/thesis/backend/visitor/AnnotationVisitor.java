@@ -7,12 +7,12 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AnnotationFinder extends VoidVisitorAdapter<Void> {
+public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
 
     private ArrayList<String> annotations = new ArrayList<>();
     private HashMap<String, String> fromAnnotationToName = new HashMap<>();
 
-    public AnnotationFinder() {
+    public AnnotationVisitor() {
         super();
         fromAnnotationToName.put("@BitwiseOperationAllowed", "BitwiseOperatorError");
         fromAnnotationToName.put("@EqualsOperatorOnObjectAllowed", "EqualsOperatorError");
@@ -26,7 +26,6 @@ public class AnnotationFinder extends VoidVisitorAdapter<Void> {
     public void visit(MarkerAnnotationExpr annotationExpr, Void arg) {
         super.visit(annotationExpr, arg);
         annotations.add(annotationExpr.toString());
-        System.out.println(annotationExpr);
     }
 
     @Override

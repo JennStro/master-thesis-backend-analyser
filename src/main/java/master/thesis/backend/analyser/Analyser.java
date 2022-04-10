@@ -6,7 +6,7 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.errors.BugReport;
-import master.thesis.backend.visitor.AnnotationFinder;
+import master.thesis.backend.visitor.AnnotationVisitor;
 import master.thesis.backend.visitor.BugFinderVisitor;
 
 public class Analyser {
@@ -18,7 +18,7 @@ public class Analyser {
 
         try {
             CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-            AnnotationFinder annotationFinder = new AnnotationFinder();
+            AnnotationVisitor annotationFinder = new AnnotationVisitor();
             annotationFinder.visit(compilationUnit, null);
             BugFinderVisitor visitor = new BugFinderVisitor(annotationFinder.errorsToIgnore());
             visitor.visit(compilationUnit, null);

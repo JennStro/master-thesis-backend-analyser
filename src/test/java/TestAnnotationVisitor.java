@@ -1,12 +1,12 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import master.thesis.backend.visitor.AnnotationFinder;
+import master.thesis.backend.visitor.AnnotationVisitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestAnnotationVisitor {
 
-    private AnnotationFinder visitor = new AnnotationFinder();
+    private AnnotationVisitor visitor = new AnnotationVisitor();
 
     @Test
     public void shouldHaveTwoAnnotations() {

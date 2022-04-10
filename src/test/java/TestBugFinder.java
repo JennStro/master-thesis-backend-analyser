@@ -5,7 +5,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.analyser.Analyser;
 import master.thesis.backend.errors.*;
-import master.thesis.backend.visitor.AnnotationFinder;
+import master.thesis.backend.visitor.AnnotationVisitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -259,7 +259,7 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
         BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
@@ -293,7 +293,7 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
         BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
@@ -313,7 +313,7 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationFinder annotationVisitor = new AnnotationFinder();
+        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
         BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
         visitor.visit(compilationUnit, null);
