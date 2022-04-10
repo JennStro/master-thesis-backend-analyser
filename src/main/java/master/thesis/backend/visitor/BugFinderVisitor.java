@@ -43,7 +43,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         if (equalsOperatorIsUsedIn(expression)) {
             if (!isInsideEqualsMethod(expression) && !isInsidePrintStatement(expression)) {
                 try {
-                    if (!isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right)) {
+                    if (equalsOperatorIsNotUsedToCompareNullOrPrimitivesIn(expression)) {
                         int lineNumber = -1;
                         if (expression.getRange().isPresent()) {
                             lineNumber = expression.getRange().get().begin.line;
@@ -153,6 +153,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private boolean equalsOperatorIsUsedIn(BinaryExpr expression) {
         BinaryExpr.Operator operator = expression.getOperator();
         return operator.equals(BinaryExpr.Operator.EQUALS) || operator.equals(BinaryExpr.Operator.NOT_EQUALS);
+    }
+
+    private boolean equalsOperatorIsNotUsedToCompareNullOrPrimitivesIn(BinaryExpr expression) {
+        Expression left = expression.getLeft();
+        Expression right = expression.getRight();
+        return !isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right);
     }
 
     /**
