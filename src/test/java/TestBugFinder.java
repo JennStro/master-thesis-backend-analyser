@@ -3,6 +3,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.analyser.Analyser;
 import master.thesis.backend.errors.*;
 import master.thesis.backend.visitor.AnnotationVisitor;
@@ -261,7 +262,8 @@ public class TestBugFinder {
         }
         AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
-        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
+        AnnotationsAdapter adapter = new AnnotationsAdapter();
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -295,7 +297,8 @@ public class TestBugFinder {
         }
         AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
-        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
+        AnnotationsAdapter adapter = new AnnotationsAdapter();
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -315,7 +318,8 @@ public class TestBugFinder {
         }
         AnnotationVisitor annotationVisitor = new AnnotationVisitor();
         annotationVisitor.visit(compilationUnit, null);
-        BugFinderVisitor visitor = new BugFinderVisitor(annotationVisitor.errorsToIgnore());
+        AnnotationsAdapter adapter = new AnnotationsAdapter();
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());

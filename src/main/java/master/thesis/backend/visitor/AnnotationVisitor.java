@@ -5,22 +5,10 @@ import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
 
     private ArrayList<String> annotations = new ArrayList<>();
-    private HashMap<String, String> fromAnnotationToName = new HashMap<>();
-
-    public AnnotationVisitor() {
-        super();
-        fromAnnotationToName.put("@BitwiseOperationAllowed", "BitwiseOperatorError");
-        fromAnnotationToName.put("@EqualsOperatorOnObjectAllowed", "EqualsOperatorError");
-        fromAnnotationToName.put("@IfWithoutBracketsAllowed", "IfWithoutBracketsError");
-        fromAnnotationToName.put("@IntegerDivisionAllowed", "IntegerDivisionError");
-        fromAnnotationToName.put("@NoEqualsMethod", "MissingEqualsMethodError");
-        fromAnnotationToName.put("@IfStatementWithSemicolonAllowed", "SemiColonAfterIfError");
-    }
 
     @Override
     public void visit(MarkerAnnotationExpr annotationExpr, Void arg) {
@@ -37,11 +25,5 @@ public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
         return this.annotations;
     }
 
-    public ArrayList<String> errorsToIgnore() {
-        ArrayList<String> errorsToIgnore = new ArrayList<>();
-        for (String annotation : this.annotations) {
-            errorsToIgnore.add(fromAnnotationToName.get(annotation));
-        }
-        return errorsToIgnore;
-    }
+
 }
