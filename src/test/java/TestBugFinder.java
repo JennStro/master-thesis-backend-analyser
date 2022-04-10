@@ -27,26 +27,22 @@ public class TestBugFinder {
     }
 
     @Test
-    public void noEqualsMethodTest() {
+    public void shouldGiveErrorWhenMissingEqualsMethod() {
         String code = "class A {}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof MissingEqualsMethodError);
     }
 
     @Test
-    public void noEqualsMethodTestWithAnnotation() {
+    public void shouldNotGiveErrorWhenMissingEqualsMethodWithAnnotation() {
         String code = "@NoEqualsMethod class A {}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void noEqualsMethodTestWithAnnotationTestClass() {
+    public void shouldNotGiveErrorWhenMissingEqualsMethodWithAnnotationReadFromFile() {
         String path = "src/test/java/TestClass.java";
         CompilationUnit compilationUnit = null;
         try {
@@ -54,88 +50,80 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
+        annotationVisitor.visit(compilationUnit, null);
+        AnnotationsAdapter adapter = new AnnotationsAdapter();
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void ifWithBrackets() {
+    public void shouldNotGiveErrorWhenIfStatementWithBrackets() {
         String code = "@NoEqualsMethod class A { public void method() {if (true) {} }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void ifWithoutBracketsOneStatementAllowed() {
+    public void shouldAllowIfStatementWithOneStatementWithoutBrackets() {
         String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void semiAfterIf() {
+    public void shouldGiveErrorWhenSemicolonAfterIfStatement() {
         String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof SemiColonAfterIfError);
     }
 
     @Test
-    public void noErrorIfStatement() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) {System.out.println(\"\");} }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertTrue(report.getBugs().isEmpty());
+    public void shouldGiveErrorWhenTwoStatementsInIfWithoutBrackets() {
+        String code = "@NoEqualsMethod class A { public void method() {if (true) " +
+                "System.out.println(\"\");" +
+                "System.out.println(\"\");" +
+                "}}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
     }
 
     @Test
-    public void equalsOperatorOnObject() {
+    public void shouldGiveErrorWhenTwoObjectsAreComparedUsingEqualsOperator() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
     }
 
     @Test
-    public void notEqualsOperatorOnObject() {
+    public void shouldGiveErrorWhenTwoObjectsAreComparedUsingNegatedEqualsOperator() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
     }
 
     @Test
-    public void equalsOperatorOnPrimitive() {
+    public void shouldNotGiveErrorWhenEqualsOperatorIsUsedOnPrimitive() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { boolean bo = a==b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void equalsOperatorOnNull() {
+    public void shouldNotGiveErrorWhenEqualsOperatorIsUsedOnNull() {
         String code = "@NoEqualsMethod class A { public A(Object a) { if (a == null) {} } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void equalsOperatorSuggestion() {
+    public void shouldSuggestToUseEqualsMethodOnObjectsWhenUsingEqualsOperator() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -144,13 +132,10 @@ public class TestBugFinder {
     }
 
     @Test
-    public void notEqualsOperatorSuggestion() {
+    public void shouldSuggestToUseNegatedEqualsMethodOnObjectsWhenUsingNegatedEqualsOperator() {
         String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
-
         BaseError error = report.getBugs().get(0);
         Assertions.assertEquals("!a.equals(b)", error.getSuggestion().get());
     }
