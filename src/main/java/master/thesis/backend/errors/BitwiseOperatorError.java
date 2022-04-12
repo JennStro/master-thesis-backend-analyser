@@ -2,12 +2,7 @@ package master.thesis.backend.errors;
 
 import java.util.Optional;
 
-public class BitwiseOperatorError extends BaseError {
-
-    private String leftOperand;
-    private String operator;
-    private String rightOperand;
-
+public class BitwiseOperatorError extends BinaryExprError {
     @Override
     public Optional<String> getSuggestion() {
         if (this.leftOperand != null && this.operator != null && this.rightOperand != null) {
@@ -19,18 +14,6 @@ public class BitwiseOperatorError extends BaseError {
     @Override
     public Optional<String> getTip() {
         return Optional.empty();
-    }
-
-    public void setLeftOperand(String leftOperand) {
-        this.leftOperand = leftOperand;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public void setRightOperand(String rightOperand) {
-        this.rightOperand = rightOperand;
     }
 
     @Override

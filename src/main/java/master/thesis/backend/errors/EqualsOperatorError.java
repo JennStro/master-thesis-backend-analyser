@@ -2,26 +2,23 @@ package master.thesis.backend.errors;
 
 import java.util.Optional;
 
-public class EqualsOperatorError extends BaseError {
+public class EqualsOperatorError extends BinaryExprError {
 
-    private String objectOne;
-    private String objectTwo;
-    private boolean isNegated = false;
     private boolean isArray = false;
 
     @Override
     public Optional<String> getSuggestion() {
-        if (this.objectOne != null && this.objectTwo != null) {
+        if (this.leftOperand != null && this.rightOperand != null) {
             if (isArray) {
-                if (isNegated) {
-                    return Optional.of("!Arrays.equals(" + this.objectOne + ", " + this.objectTwo + ")");
+                if (this.operator.equals("!=")) {
+                    return Optional.of("!Arrays.equals(" + this.leftOperand + ", " + this.rightOperand + ")");
                 }
-                return Optional.of("Arrays.equals(" + this.objectOne + ", " + this.objectTwo + ")");
+                return Optional.of("Arrays.equals(" + this.leftOperand + ", " + this.rightOperand + ")");
             }
-            if (isNegated) {
-                return Optional.of("!" + this.objectOne + ".equals(" + this.objectTwo + ")");
+            if (this.operator.equals("!=")) {
+                return Optional.of("!" + this.leftOperand + ".equals(" + this.rightOperand + ")");
             }
-            return Optional.of(this.objectOne + ".equals(" + this.objectTwo + ")");
+            return Optional.of(this.leftOperand + ".equals(" + this.rightOperand + ")");
         }
         return Optional.empty();
     }
@@ -31,25 +28,13 @@ public class EqualsOperatorError extends BaseError {
         return Optional.empty();
     }
 
-    public void withNegatedOperator() {
-        this.isNegated = true;
-    }
-
-    public void setObjectOne(String objectOne) {
-        this.objectOne = objectOne;
-    }
-
-    public void setObjectTwo(String objectTwo) {
-        this.objectTwo = objectTwo;
-    }
-
     public void setArraysSuggestion() {
         this.isArray = true;
     }
 
     @Override
     public String getCauseOfError() {
-        if (isNegated) {
+        if (this.operator.equals("!=")) {
             return "You are using \"!=\" to compare objects! In Python you could do this, but in Java we use the equals method.";
         }
         return "You are using \"==\" to compare objects! In Python you could do this, but in Java we use the equals method.";

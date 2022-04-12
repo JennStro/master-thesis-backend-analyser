@@ -50,11 +50,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                             equalsOperatorError.setContainingClass(getContainingClass(expression).get());
                         }
                         equalsOperatorError.setLineNumber(lineNumber);
-                        equalsOperatorError.setObjectOne(left.toString());
-                        equalsOperatorError.setObjectTwo(right.toString());
-                        if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                            equalsOperatorError.withNegatedOperator();
-                        }
+                        equalsOperatorError.setLeftOperand(left.toString());
+                        equalsOperatorError.setRightOperand(right.toString());
+                        equalsOperatorError.setOperator(expression.getOperator().asString());
                         if (left.calculateResolvedType().isArray() && right.calculateResolvedType().isArray()) {
                             equalsOperatorError.setArraysSuggestion();
                         }
@@ -75,11 +73,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                             equalsOperatorError.setContainingClass(getContainingClass(expression).get());
                         }
                         equalsOperatorError.setLineNumber(lineNumber);
-                        equalsOperatorError.setObjectOne(left.toString());
-                        equalsOperatorError.setObjectTwo(right.toString());
-                        if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                            equalsOperatorError.withNegatedOperator();
-                        }
+                        equalsOperatorError.setLeftOperand(left.toString());
+                        equalsOperatorError.setRightOperand(right.toString());
+                        equalsOperatorError.setOperator(expression.getOperator().asString());
                         if (!errorsToIgnore.contains(equalsOperatorError.getName())) {
                             report.addBug(equalsOperatorError);
                         }
