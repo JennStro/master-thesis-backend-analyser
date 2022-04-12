@@ -8,8 +8,6 @@ public class BugReport {
     private ArrayList<BaseError> bugs = new ArrayList<>();
     private Throwable exceptionFromJavaParser;
 
-    public void setBugs(ArrayList<BaseError> bugs) { this.bugs = bugs;}
-
     public ArrayList<BaseError> getBugs() {
         return bugs;
     }
