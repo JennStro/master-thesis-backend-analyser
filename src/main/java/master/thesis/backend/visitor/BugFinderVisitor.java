@@ -199,6 +199,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         super.visit(declaration, arg);
         List<Node> children = declaration.getChildNodes();
 
+        report.setClassName(declaration.getNameAsString());
+
         boolean classHasEqualsMethod = false;
         boolean shouldIgnoreNoEqualsMethodError = false;
 

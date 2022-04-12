@@ -7,6 +7,7 @@ public class BugReport {
 
     private ArrayList<BaseError> bugs = new ArrayList<>();
     private Throwable exceptionFromJavaParser;
+    private String className;
 
     public ArrayList<BaseError> getBugs() {
         return bugs;
@@ -26,4 +27,10 @@ public class BugReport {
         }
         return Optional.of(exceptionFromJavaParser);
     }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getClassName() {return this.className;}
 }
