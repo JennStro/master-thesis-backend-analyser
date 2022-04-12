@@ -7,7 +7,6 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.errors.BugReport;
-import master.thesis.backend.visitor.AnnotationVisitor;
 import master.thesis.backend.visitor.BugFinderVisitor;
 
 public class Analyser {
@@ -19,10 +18,8 @@ public class Analyser {
 
         try {
             CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-            AnnotationVisitor annotationVisitor = new AnnotationVisitor();
-            annotationVisitor.visit(compilationUnit, null);
-            AnnotationsAdapter adapter = new AnnotationsAdapter();
-            BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
+            AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+            BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
             visitor.visit(compilationUnit, null);
             return visitor.getReport();
         } catch (Throwable e) {

@@ -1,19 +1,27 @@
 package master.thesis.backend.adapter;
 
+import com.github.javaparser.ast.CompilationUnit;
+import master.thesis.backend.analyser.AnalyserConfiguration;
+import master.thesis.backend.errors.*;
+import master.thesis.backend.visitor.AnnotationVisitor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AnnotationsAdapter {
+public class AnnotationsAdapter implements AnalyserConfiguration {
 
     private HashMap<String, String> fromAnnotationToName = new HashMap<>();
+    private AnnotationVisitor visitor;
 
-    public AnnotationsAdapter() {
-        fromAnnotationToName.put("@BitwiseOperationAllowed", "BitwiseOperatorError");
-        fromAnnotationToName.put("@EqualsOperatorOnObjectAllowed", "EqualsOperatorError");
-        fromAnnotationToName.put("@IfWithoutBracketsAllowed", "IfWithoutBracketsError");
-        fromAnnotationToName.put("@IntegerDivisionAllowed", "IntegerDivisionError");
-        fromAnnotationToName.put("@NoEqualsMethod", "MissingEqualsMethodError");
-        fromAnnotationToName.put("@IfStatementWithSemicolonAllowed", "SemiColonAfterIfError");
+    public AnnotationsAdapter(CompilationUnit compilationUnit) {
+        fromAnnotationToName.put("@BitwiseOperationAllowed", new BitwiseOperatorError().getName());
+        fromAnnotationToName.put("@EqualsOperatorOnObjectAllowed", new EqualsOperatorError().getName());
+        fromAnnotationToName.put("@IfWithoutBracketsAllowed", new IfWithoutBracketsError().getName());
+        fromAnnotationToName.put("@IntegerDivisionAllowed", new IntegerDivisionError().getName());
+        fromAnnotationToName.put("@NoEqualsMethod", new MissingEqualsMethodError().getName());
+        fromAnnotationToName.put("@IfStatementWithSemicolonAllowed", new SemiColonAfterIfError().getName());
+        this.visitor = new AnnotationVisitor();
+        visitor.visit(compilationUnit, null);
     }
 
     public ArrayList<String> getErrorsToIgnoreAsName(ArrayList<String> annotations) {
@@ -24,4 +32,13 @@ public class AnnotationsAdapter {
         return errorsToIgnore;
     }
 
+    @Override
+    public ArrayList<String> getErrorsToIgnore() {
+        ArrayList<String> errorsToIgnore = new ArrayList<>();
+        ArrayList<String> annotations = visitor.getAnnotations();
+        for (String annotation : annotations) {
+            errorsToIgnore.add(fromAnnotationToName.get(annotation));
+        }
+        return errorsToIgnore;
+    }
 }

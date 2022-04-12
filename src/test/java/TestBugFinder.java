@@ -5,6 +5,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.analyser.Analyser;
+import master.thesis.backend.analyser.AnalyserConfiguration;
 import master.thesis.backend.errors.*;
 import master.thesis.backend.visitor.AnnotationVisitor;
 import org.junit.jupiter.api.Assertions;
@@ -50,10 +51,8 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
-        annotationVisitor.visit(compilationUnit, null);
-        AnnotationsAdapter adapter = new AnnotationsAdapter();
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
+        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertTrue(report.getBugs().isEmpty());
@@ -245,10 +244,8 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
-        annotationVisitor.visit(compilationUnit, null);
-        AnnotationsAdapter adapter = new AnnotationsAdapter();
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
+        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -280,10 +277,8 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
-        annotationVisitor.visit(compilationUnit, null);
-        AnnotationsAdapter adapter = new AnnotationsAdapter();
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
+        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -301,10 +296,8 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        AnnotationVisitor annotationVisitor = new AnnotationVisitor();
-        annotationVisitor.visit(compilationUnit, null);
-        AnnotationsAdapter adapter = new AnnotationsAdapter();
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnoreAsName(annotationVisitor.getAnnotations()));
+        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());

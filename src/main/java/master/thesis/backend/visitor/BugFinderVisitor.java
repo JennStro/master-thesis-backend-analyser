@@ -44,25 +44,22 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsideEqualsMethod(expression) && !isInsidePrintStatement(expression)) {
                 try {
                     if (equalsOperatorIsNotUsedToCompareNullOrPrimitivesIn(expression)) {
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
-                        EqualsOperatorError error = new EqualsOperatorError();
+                        int lineNumber = getLineNumberFrom(expression);
+                        EqualsOperatorError equalsOperatorError = new EqualsOperatorError();
                         if (getContainingClass(expression).isPresent()) {
-                            error.setContainingClass(getContainingClass(expression).get());
+                            equalsOperatorError.setContainingClass(getContainingClass(expression).get());
                         }
-                        error.setLineNumber(lineNumber);
-                        error.setObjectOne(left.toString());
-                        error.setObjectTwo(right.toString());
+                        equalsOperatorError.setLineNumber(lineNumber);
+                        equalsOperatorError.setObjectOne(left.toString());
+                        equalsOperatorError.setObjectTwo(right.toString());
                         if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                            error.withNegatedOperator();
+                            equalsOperatorError.withNegatedOperator();
                         }
                         if (left.calculateResolvedType().isArray() && right.calculateResolvedType().isArray()) {
-                            error.setArraysSuggestion();
+                            equalsOperatorError.setArraysSuggestion();
                         }
-                        if (!errorsToIgnore.contains(error.getName())) {
-                            report.addBug(error);
+                        if (!errorsToIgnore.contains(equalsOperatorError.getName())) {
+                            report.addBug(equalsOperatorError);
                         }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
@@ -72,22 +69,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     boolean leftIsObjectReference = left.isNameExpr();
                     boolean rightIsObjectReference = right.isNameExpr();
                     if (leftIsObjectReference && rightIsObjectReference) {
-                        int lineNumber = -1;
-                        if (expression.getRange().isPresent()) {
-                            lineNumber = expression.getRange().get().begin.line;
-                        }
-                        EqualsOperatorError error = new EqualsOperatorError();
+                        int lineNumber = getLineNumberFrom(expression);
+                        EqualsOperatorError equalsOperatorError = new EqualsOperatorError();
                         if (getContainingClass(expression).isPresent()) {
-                            error.setContainingClass(getContainingClass(expression).get());
+                            equalsOperatorError.setContainingClass(getContainingClass(expression).get());
                         }
-                        error.setLineNumber(lineNumber);
-                        error.setObjectOne(left.toString());
-                        error.setObjectTwo(right.toString());
+                        equalsOperatorError.setLineNumber(lineNumber);
+                        equalsOperatorError.setObjectOne(left.toString());
+                        equalsOperatorError.setObjectTwo(right.toString());
                         if (operator.equals(BinaryExpr.Operator.NOT_EQUALS)) {
-                            error.withNegatedOperator();
+                            equalsOperatorError.withNegatedOperator();
                         }
-                        if (!errorsToIgnore.contains(error.getName())) {
-                            report.addBug(error);
+                        if (!errorsToIgnore.contains(equalsOperatorError.getName())) {
+                            report.addBug(equalsOperatorError);
                         }
                     }
                     else {
@@ -95,8 +89,6 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     }
                 }
             }
-
-
         }
         if (operator.equals(BinaryExpr.Operator.DIVIDE)) {
             if (!isInsidePrintStatement(expression)) {
