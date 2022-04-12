@@ -5,7 +5,7 @@ import java.util.Optional;
 public class IfWithoutBracketsError extends BaseError {
 
     private String condition;
-    private Object thenBranch;
+    private String thenBranch;
 
     public void setCondition(String condition) {
         this.condition = condition;
