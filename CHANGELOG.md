@@ -1,3 +1,11 @@
+### :fire: 4.0.0
+**Breaking change:**  
+**Renamed** BaseError methods:  
+````getWhat() -> getCauseOfError()````   
+`````getLink() -> getMoreInfoLink()`````   
+
+**Removed** ```getAnnotationName()```   
+**Added** ```getName()```
 ### :bug: 3.5.1   
 Bug: Fix bug in NEM suggestion
 
