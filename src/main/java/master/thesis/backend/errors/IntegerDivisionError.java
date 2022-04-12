@@ -2,23 +2,12 @@ package master.thesis.backend.errors;
 
 import java.util.Optional;
 
-public class IntegerDivisionError extends BaseError {
-
-    public void setLeftInteger(String leftInteger) {
-        this.leftInteger = leftInteger;
-    }
-
-    public void setRightInteger(String rightInteger) {
-        this.rightInteger = rightInteger;
-    }
-
-    private String leftInteger;
-    private String rightInteger;
+public class IntegerDivisionError extends BinaryExprError {
 
     @Override
     public Optional<String> getSuggestion() {
-        if (leftInteger != null && rightInteger != null) {
-            return Optional.of("(double)" + leftInteger + "/" + "(double)" + rightInteger);
+        if (this.leftOperand != null && this.rightOperand != null) {
+            return Optional.of("(double)" + this.leftOperand + "/" + "(double)" + this.rightOperand);
         }
         return Optional.empty();
     }

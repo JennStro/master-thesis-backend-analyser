@@ -96,8 +96,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         }
                         int lineNumber = getLineNumberFrom(expression);
                         integerDivisionError.setLineNumber(lineNumber);
-                        integerDivisionError.setLeftInteger(left.toString());
-                        integerDivisionError.setRightInteger(right.toString());
+                        integerDivisionError.setLeftOperand(left.toString());
+                        integerDivisionError.setRightOperand(right.toString());
                         if (!errorsToIgnore.contains(integerDivisionError.getName())) {
                             report.addBug(integerDivisionError);
                         }
