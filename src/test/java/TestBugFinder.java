@@ -18,12 +18,6 @@ import java.io.FileNotFoundException;
 
 public class TestBugFinder {
 
-    @BeforeAll
-    static void setUp() {
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
-    }
 
     @Test
     public void shouldGiveErrorWhenMissingEqualsMethod() {
