@@ -41,4 +41,14 @@ public class AnnotationsAdapter implements AnalyserConfiguration {
         }
         return errorsToIgnore;
     }
+
+    @Override
+    public ArrayList<String> getErrorsToIgnoreForClass(String className) {
+        ArrayList<String> errorsToIgnore = new ArrayList<>();
+        ArrayList<String> annotations = visitor.getAnnotationsForClass(className);
+        for (String annotation : annotations) {
+            errorsToIgnore.add(fromAnnotationToName.get(annotation));
+        }
+        return errorsToIgnore;
+    }
 }

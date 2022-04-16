@@ -13,4 +13,6 @@ public interface AnalyserConfiguration {
      */
     ArrayList<String> getErrorsToIgnore();
 
+    ArrayList<String> getErrorsToIgnoreForClass(String className);
+
 }

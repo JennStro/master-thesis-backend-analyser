@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
+import master.thesis.backend.analyser.AnalyserConfiguration;
 import master.thesis.backend.errors.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -19,11 +20,9 @@ import java.util.Optional;
 public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
 
     private BugReport report = new BugReport();
-    private ArrayList<String> errorsToIgnore;
+    AnalyserConfiguration configuration;
 
-    public BugFinderVisitor() { super(); this.errorsToIgnore = new ArrayList<>();}
-
-    public BugFinderVisitor(@NonNull ArrayList<String> errorsToIgnore) {super(); this.errorsToIgnore = errorsToIgnore; }
+    public BugFinderVisitor(AnalyserConfiguration configuration) { super(); this.configuration = configuration;}
 
     /**
      * Check that objects is not compared with the equals operator.
@@ -56,9 +55,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         if (left.calculateResolvedType().isArray() && right.calculateResolvedType().isArray()) {
                             equalsOperatorError.setArraysSuggestion();
                         }
-                        if (!errorsToIgnore.contains(equalsOperatorError.getName())) {
                             report.addBug(equalsOperatorError);
-                        }
+
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     // When a type is not resolved, we know it is not a primitive. But an object may be called upon, which can
@@ -76,9 +74,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         equalsOperatorError.setLeftOperand(left.toString());
                         equalsOperatorError.setRightOperand(right.toString());
                         equalsOperatorError.setOperator(expression.getOperator().asString());
-                        if (!errorsToIgnore.contains(equalsOperatorError.getName())) {
+
                             report.addBug(equalsOperatorError);
-                        }
+
                     }
                     else {
                         report.attach(unsolvedSymbolException);
@@ -98,9 +96,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         integerDivisionError.setLineNumber(lineNumber);
                         integerDivisionError.setLeftOperand(left.toString());
                         integerDivisionError.setRightOperand(right.toString());
-                        if (!errorsToIgnore.contains(integerDivisionError.getName())) {
                             report.addBug(integerDivisionError);
-                        }
+
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -121,9 +118,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         error.setLeftOperand(left.toString());
                         error.setRightOperand(right.toString());
                         error.setOperator(operator.asString());
-                        if (!errorsToIgnore.contains(error.getName())) {
                             report.addBug(error);
-                        }
+
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -247,9 +243,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             }
             error.setLineNumber(lineNumber);
             error.setCondition(statement.getCondition().toString());
-            if (!errorsToIgnore.contains(error.getName())) {
                 report.addBug(error);
-            }
+
         }
         else if (!thenStatementHasCurlyBraces) {
             int lineNumberOfIfStatement = -1;
@@ -277,9 +272,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     error.setLineNumber(lineNumberOfIfStatement);
                     error.setCondition(statement.getCondition().toString());
                     error.setThenBranch(statement.getThenStmt().toString());
-                    if (!errorsToIgnore.contains(error.getName())) {
                         report.addBug(error);
-                    }
+
                 }
             }
         }

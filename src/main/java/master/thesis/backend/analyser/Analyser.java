@@ -19,7 +19,7 @@ public class Analyser {
         try {
             CompilationUnit compilationUnit = StaticJavaParser.parse(code);
             AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-            BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
+            BugFinderVisitor visitor = new BugFinderVisitor(adapter);
             visitor.visit(compilationUnit, null);
             return visitor.getReport();
         } catch (Throwable e) {
