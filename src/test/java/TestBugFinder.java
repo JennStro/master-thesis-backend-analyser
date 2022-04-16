@@ -359,9 +359,7 @@ public class TestBugFinder {
     @Test
     public void allowIfOnSameLine() {
         String code = "@NoEqualsMethod class A { public String method(boolean b) { if (b) return \"b is true\"; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -441,8 +439,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void bitwiseOperatorAnnotation() {
-        String code = "@NoEqualsMethod @BitwiseOperationAllowed class A { public A(int a, int b) { boolean a = true | false; } }";
+    public void shouldNotHaveBitwiseOperatorErrorWhenAnnotation() {
+        String code =
+                "@NoEqualsMethod " +
+                "@BitwiseOperationAllowed " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "boolean a = true | false; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
@@ -457,8 +462,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void ifStatementOnSameLineAnnotation() {
-        String code = "@NoEqualsMethod @IfWithoutBracketsAllowed class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
+    public void shouldNotGiveIfStatementWithoutBracketsErrorWhenAnnotation() {
+        String code =
+                "@NoEqualsMethod " +
+                "@IfWithoutBracketsAllowed " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b) a=b; b=a; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }

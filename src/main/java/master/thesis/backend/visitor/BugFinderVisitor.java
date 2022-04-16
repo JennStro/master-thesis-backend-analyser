@@ -11,9 +11,6 @@ import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
 import master.thesis.backend.analyser.AnalyserConfiguration;
 import master.thesis.backend.errors.*;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +52,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         if (left.calculateResolvedType().isArray() && right.calculateResolvedType().isArray()) {
                             equalsOperatorError.setArraysSuggestion();
                         }
+                        if (shouldBeAddedToReport(equalsOperatorError)) {
                             report.addBug(equalsOperatorError);
-
+                        }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     // When a type is not resolved, we know it is not a primitive. But an object may be called upon, which can
@@ -110,16 +108,17 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 try {
                     if (left.calculateResolvedType().describe().equals("boolean") && right.calculateResolvedType().describe().equals("boolean")) {
                         int lineNumber = getLineNumberFrom(expression);
-                        BitwiseOperatorError error = new BitwiseOperatorError();
+                        BitwiseOperatorError bitwiseOperatorError = new BitwiseOperatorError();
                         if (getContainingClass(expression).isPresent()) {
-                            error.setContainingClass(getContainingClass(expression).get());
+                            bitwiseOperatorError.setContainingClass(getContainingClass(expression).get());
                         }
-                        error.setLineNumber(lineNumber);
-                        error.setLeftOperand(left.toString());
-                        error.setRightOperand(right.toString());
-                        error.setOperator(operator.asString());
-                            report.addBug(error);
-
+                        bitwiseOperatorError.setLineNumber(lineNumber);
+                        bitwiseOperatorError.setLeftOperand(left.toString());
+                        bitwiseOperatorError.setRightOperand(right.toString());
+                        bitwiseOperatorError.setOperator(operator.asString());
+                        if (shouldBeAddedToReport(bitwiseOperatorError)) {
+                            report.addBug(bitwiseOperatorError);
+                        }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -137,6 +136,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         Expression left = expression.getLeft();
         Expression right = expression.getRight();
         return !isPrimitiveOrNull(left) && !isPrimitiveOrNull(right) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(left) && !ifMethodCallExpressionThenCheckIfItReturnsPrimitiveOrNull(right);
+    }
+
+    private boolean shouldBeAddedToReport(BaseError error) {
+        if (configuration == null) {
+            return true;
+        }
+        return !configuration.getErrorsToIgnoreForClass(error.getContainingClass()).contains(error.getName());
     }
 
     /**
