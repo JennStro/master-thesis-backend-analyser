@@ -16,4 +16,19 @@ public class TestAnnotationVisitor {
         Assertions.assertEquals(2, visitor.getAnnotations().size());
     }
 
+    @Test
+    public void shouldHaveAnnotationOnlyInnerClass() {
+        String code =
+                "@Something " +
+                "@SomethingElse " +
+                "class A {" +
+                "   @OnlyForClassB" +
+                "   class B {}" +
+                "}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
+        visitor.visit(compilationUnit, null);
+        Assertions.assertEquals(1, visitor.getAnnotationsForClass("B").size());
+        System.out.println(visitor.getAnnotationsForClass("B"));
+    }
+
 }
