@@ -430,10 +430,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void ifStatementSemicolonAllowedAnnotation() {
+    public void shouldAllowIfStatementSemicolonWhenAnnotation() {
         String code =
-                "@NoEqualsMethod @IfStatementWithSemicolonAllowed class A { public A(int a, int b) { " +
-                        "if (a==b); System.out.println(\"Hello\");}}";
+                "@NoEqualsMethod " +
+                "@IfStatementWithSemicolonAllowed " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b); System.out.println(\"Hello\");" +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }

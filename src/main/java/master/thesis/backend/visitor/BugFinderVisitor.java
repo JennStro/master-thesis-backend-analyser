@@ -243,13 +243,15 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (statement.getRange().isPresent()) {
                 lineNumber = statement.getRange().get().begin.line;
             }
-            SemiColonAfterIfError error = new SemiColonAfterIfError();
+            SemiColonAfterIfError semiColonAfterIfError = new SemiColonAfterIfError();
             if (getContainingClass(statement).isPresent()) {
-                error.setContainingClass(getContainingClass(statement).get());
+                semiColonAfterIfError.setContainingClass(getContainingClass(statement).get());
             }
-            error.setLineNumber(lineNumber);
-            error.setCondition(statement.getCondition().toString());
-                report.addBug(error);
+            semiColonAfterIfError.setLineNumber(lineNumber);
+            semiColonAfterIfError.setCondition(statement.getCondition().toString());
+            if (shouldBeAddedToReport(semiColonAfterIfError)) {
+                report.addBug(semiColonAfterIfError);
+            }
 
         }
         else if (!thenStatementHasCurlyBraces) {
