@@ -10,7 +10,10 @@ public class TestAnnotationVisitor {
 
     @Test
     public void shouldHaveTwoAnnotations() {
-        String code = "@Something @SomethingElse class A {}";
+        String code =
+                "@Something " +
+                "@SomethingElse " +
+                "class A {}";
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         Assertions.assertEquals(2, visitor.getAnnotations().size());
@@ -28,7 +31,7 @@ public class TestAnnotationVisitor {
         CompilationUnit compilationUnit = StaticJavaParser.parse(code);
         visitor.visit(compilationUnit, null);
         Assertions.assertEquals(1, visitor.getAnnotationsForClass("B").size());
-        System.out.println(visitor.getAnnotationsForClass("B"));
+        Assertions.assertEquals("@OnlyForClassB",visitor.getAnnotationsForClass("B").get(0));
     }
 
 }
