@@ -94,8 +94,9 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         integerDivisionError.setLineNumber(lineNumber);
                         integerDivisionError.setLeftOperand(left.toString());
                         integerDivisionError.setRightOperand(right.toString());
+                        if (shouldBeAddedToReport(integerDivisionError)) {
                             report.addBug(integerDivisionError);
-
+                        }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);

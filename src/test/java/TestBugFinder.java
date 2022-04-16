@@ -470,7 +470,14 @@ public class TestBugFinder {
 
     @Test
     public void shouldIgnoreErrorWithIntegerDivisionAnnotation() {
-        String code = "@NoEqualsMethod @IntegerDivisionAllowed class A { public A(int a, int b) { int bo = a/b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "@IntegerDivisionAllowed " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "int bo = a/b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
