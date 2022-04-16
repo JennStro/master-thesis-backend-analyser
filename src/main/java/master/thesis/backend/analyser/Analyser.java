@@ -33,6 +33,13 @@ public class Analyser {
         }
     }
 
+    /**
+     *
+     * Optional configuration, needs to implement {@link AnalyserConfiguration}.
+     * If no configuration is set, {@link AnnotationsAdapter} will be used.
+     *
+     * @param configuration the configuration to be set
+     */
     public void setConfiguration(AnalyserConfiguration configuration) {
         this.configuration = configuration;
     }

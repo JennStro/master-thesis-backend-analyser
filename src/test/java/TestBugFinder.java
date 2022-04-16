@@ -52,21 +52,42 @@ public class TestBugFinder {
 
     @Test
     public void shouldNotGiveErrorWhenIfStatementWithBrackets() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) {} }}";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "if (true) {} " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void shouldAllowIfStatementWithOneStatementWithoutBrackets() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
+        String code =
+                    "@NoEqualsMethod " +
+                    "class A { " +
+                        "public void method() {" +
+                            "if (true) \n " +
+                                "System.out.println(\"\"); " +
+                        "}" +
+                    "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void shouldGiveErrorWhenSemicolonAfterIfStatement() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "if (true); {" +
+                            "System.out.println(\"\");" +
+                        "} " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof SemiColonAfterIfError);
@@ -74,10 +95,15 @@ public class TestBugFinder {
 
     @Test
     public void shouldGiveErrorWhenTwoStatementsInIfWithoutBrackets() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) " +
-                "System.out.println(\"\");" +
-                "System.out.println(\"\");" +
-                "}}";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "if (true) " +
+                            "System.out.println(\"\");" +
+                            "System.out.println(\"\");" +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
@@ -85,7 +111,13 @@ public class TestBugFinder {
 
     @Test
     public void shouldGiveErrorWhenTwoObjectsAreComparedUsingEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(Object a, Object b) { " +
+                        "boolean bo = a==b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
@@ -93,7 +125,13 @@ public class TestBugFinder {
 
     @Test
     public void shouldGiveErrorWhenTwoObjectsAreComparedUsingNegatedEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(Object a, Object b) { " +
+                        "boolean bo = a!=b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
@@ -132,8 +170,16 @@ public class TestBugFinder {
     }
 
     @Test
-    public void semiAfterIfSuggestion() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true); {System.out.println(\"\");} }}";
+    public void shouldSuggestToRemoveSemicolonWhenSemiAfterIf() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "if (true); {" +
+                            "System.out.println(\"\");" +
+                        "} " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
@@ -141,15 +187,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void ifWithoutBlockOneStatementAllowed() {
-        String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
-        BugReport report = new Analyser().analyse(code);
-        Assertions.assertTrue(report.getBugs().isEmpty());
-    }
-
-    @Test
-    public void unresolvedMethodCallException() {
-        String code = "@NoEqualsMethod class A { public String method() { Bar b = new Bar(); return b.toString(); } }";
+    public void shouldNotGiveErrorWhenOnlyOneStatementInIfBodyWithoutBrackets() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "if (true) \n " +
+                            "System.out.println(\"\"); " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
@@ -159,32 +205,55 @@ public class TestBugFinder {
      * if it returns void.
      */
     @Test
-    public void unresolvedMethodCallExceptionEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public boolean method() { Bar b = new Bar(); Bar b2 = new Bar(); return b.getInt() == b2.getInt(); } }";
+    public void shouldGiveExceptionWhenUnresolvedMethod() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public boolean method() { " +
+                        "Bar b = new Bar(); " +
+                        "Bar b2 = new Bar(); " +
+                        "return b.getInt() == b2.getInt(); " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getException().isPresent());
     }
 
     @Test
-    public void resolvedMethodCallExceptionEqualsOperator() {
-        String code = "@NoEqualsMethod class A { @NoEqualsMethod class Bar {public int getInt() {return 2;}} public boolean method() { Bar b = new Bar(); Bar b2 = new Bar(); return b.getInt() == b2.getInt(); } }";
+    public void shouldNotGiveEqualsOperatorErrorWhenTypeIsResolvedToInt() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "@NoEqualsMethod " +
+                    "class Bar {" +
+                        "public int getInt() {" +
+                            "return 2;" +
+                        "}" +
+                    "} " +
+
+                    "public boolean method() { " +
+                        "Bar b = new Bar(); " +
+                        "Bar b2 = new Bar(); " +
+                        "return b.getInt() == b2.getInt(); " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertFalse(report.getException().isPresent());
     }
 
     @Test
-    public void resolvedMethodCallException() {
-        String code = "@NoEqualsMethod class A { @NoEqualsMethod class Bar {  } public String method() { Bar b = new Bar(); b.toString(); return b; } }";
-        BugReport report = new Analyser().analyse(code);
-        Assertions.assertTrue(report.getBugs().isEmpty());
-        Assertions.assertFalse(report.getException().isPresent());
-    }
-
-    @Test
-    public void unresolvedVariableExceptionEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b==b1) {return b.toString();} } }";
+    public void shouldGiveEqualsOperatorErrorWhenUnresolvedObjectsAreBeingCompared() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public String method(Bar b, Bar b1) { " +
+                        "if (b==b1) {" +
+                            "return b.toString();" +
+                        "} " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
@@ -192,8 +261,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void unresolvedVariableExceptionEqualsOperatorNoError() {
-        String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b.getNumber() ==b1.getNumber()) {return b.toString();} } }";
+    public void shouldNotGiveEqualsOperatorErrorButGiveExceptionWhenMethodCallOnUnresolvedType() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public String method(Bar b, Bar b1) { " +
+                        "if (b.getNumber() ==b1.getNumber()) {" +
+                            "return b.toString();} " +
+                        "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getException().isPresent());

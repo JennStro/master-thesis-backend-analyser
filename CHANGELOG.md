@@ -1,3 +1,7 @@
+### :star: 4.1.0 
+New feature: ```AnalyserConfiguration``` can be implemented and set in `Analyser`. 
+Default configuration is ``AnnotationsAdapter``.
+
 ### :fire: 4.0.0
 **Breaking change:**  
 **Renamed** BaseError methods:  
