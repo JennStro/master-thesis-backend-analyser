@@ -11,6 +11,8 @@ import master.thesis.backend.visitor.BugFinderVisitor;
 
 public class Analyser {
 
+    private AnalyserConfiguration configuration;
+
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
         combinedTypeSolver.add(new ReflectionTypeSolver());
@@ -18,8 +20,10 @@ public class Analyser {
 
         try {
             CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-            AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-            BugFinderVisitor visitor = new BugFinderVisitor(adapter);
+            if (configuration == null) {
+                configuration = new AnnotationsAdapter(compilationUnit);
+            }
+            BugFinderVisitor visitor = new BugFinderVisitor(configuration);
             visitor.visit(compilationUnit, null);
             return visitor.getReport();
         } catch (Throwable e) {
@@ -27,5 +31,9 @@ public class Analyser {
             report.attach(e);
             return report;
         }
+    }
+
+    public void setConfiguration(AnalyserConfiguration configuration) {
+        this.configuration = configuration;
     }
 }
