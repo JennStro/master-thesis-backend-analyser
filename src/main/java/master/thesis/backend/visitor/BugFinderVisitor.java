@@ -273,15 +273,16 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 int lineNumberOfSiblingStatement = sibling.getRange().get().begin.line;
 
                 if (indentationThenStatement == intendationSiblingStatement || lineNumberOfSiblingStatement == lineNumberOfIfStatement || lineNumberOfSiblingStatement == lineNumberOfThenStatement) {
-                    IfWithoutBracketsError error = new IfWithoutBracketsError();
+                    IfWithoutBracketsError ifWithoutBracketsError = new IfWithoutBracketsError();
                     if (getContainingClass(statement).isPresent()) {
-                        error.setContainingClass(getContainingClass(statement).get());
+                        ifWithoutBracketsError.setContainingClass(getContainingClass(statement).get());
                     }
-                    error.setLineNumber(lineNumberOfIfStatement);
-                    error.setCondition(statement.getCondition().toString());
-                    error.setThenBranch(statement.getThenStmt().toString());
-                        report.addBug(error);
-
+                    ifWithoutBracketsError.setLineNumber(lineNumberOfIfStatement);
+                    ifWithoutBracketsError.setCondition(statement.getCondition().toString());
+                    ifWithoutBracketsError.setThenBranch(statement.getThenStmt().toString());
+                    if (shouldBeAddedToReport(ifWithoutBracketsError)) {
+                        report.addBug(ifWithoutBracketsError);
+                    }
                 }
             }
         }

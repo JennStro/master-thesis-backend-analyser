@@ -276,25 +276,6 @@ public class TestBugFinder {
     }
 
     @Test
-    public void ifWithoutBracketsClass() {
-        String path = "src/test/java/IfWithoutBracketsClass.java";
-        CompilationUnit compilationUnit = null;
-        try {
-            compilationUnit = StaticJavaParser.parse(new File(path));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("IfWithoutBracketsClass", error.getContainingClass());
-        Assertions.assertEquals("if (shouldAddToList) {list.add(\"1\");...}", error.getSuggestion().get());
-    }
-
-    @Test
     public void equalsOperatorOnObjectInEqualsMethodIsAllowed() {
         String code = "class A { public boolean equals(Object o) {return this == o;}}";
         BugReport report = new Analyser().analyse(code);
