@@ -18,8 +18,6 @@ import java.io.FileNotFoundException;
 
 public class TestBugFinder {
 
-    private BugFinderVisitor visitor = new BugFinderVisitor();
-
     @BeforeAll
     static void setUp() {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
@@ -52,7 +50,7 @@ public class TestBugFinder {
             e.printStackTrace();
         }
         AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertTrue(report.getBugs().isEmpty());
@@ -151,18 +149,14 @@ public class TestBugFinder {
     @Test
     public void ifWithoutBlockOneStatementAllowed() {
         String code = "@NoEqualsMethod class A { public void method() {if (true) \n System.out.println(\"\"); }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void unresolvedMethodCallException() {
         String code = "@NoEqualsMethod class A { public String method() { Bar b = new Bar(); return b.toString(); } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -173,9 +167,7 @@ public class TestBugFinder {
     @Test
     public void unresolvedMethodCallExceptionEqualsOperator() {
         String code = "@NoEqualsMethod class A { public boolean method() { Bar b = new Bar(); Bar b2 = new Bar(); return b.getInt() == b2.getInt(); } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getException().isPresent());
     }
@@ -183,9 +175,7 @@ public class TestBugFinder {
     @Test
     public void resolvedMethodCallExceptionEqualsOperator() {
         String code = "@NoEqualsMethod class A { @NoEqualsMethod class Bar {public int getInt() {return 2;}} public boolean method() { Bar b = new Bar(); Bar b2 = new Bar(); return b.getInt() == b2.getInt(); } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertFalse(report.getException().isPresent());
     }
@@ -193,9 +183,7 @@ public class TestBugFinder {
     @Test
     public void resolvedMethodCallException() {
         String code = "@NoEqualsMethod class A { @NoEqualsMethod class Bar {  } public String method() { Bar b = new Bar(); b.toString(); return b; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertFalse(report.getException().isPresent());
     }
@@ -212,9 +200,7 @@ public class TestBugFinder {
     @Test
     public void unresolvedVariableExceptionEqualsOperatorNoError() {
         String code = "@NoEqualsMethod class A { public String method(Bar b, Bar b1) { if (b.getNumber() ==b1.getNumber()) {return b.toString();} } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getException().isPresent());
     }
@@ -245,7 +231,7 @@ public class TestBugFinder {
             e.printStackTrace();
         }
         AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -260,6 +246,8 @@ public class TestBugFinder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -278,7 +266,7 @@ public class TestBugFinder {
             e.printStackTrace();
         }
         AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -297,7 +285,7 @@ public class TestBugFinder {
             e.printStackTrace();
         }
         AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter.getErrorsToIgnore());
+        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
         visitor.visit(compilationUnit, null);
         BugReport report = visitor.getReport();
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -309,18 +297,14 @@ public class TestBugFinder {
     @Test
     public void equalsOperatorOnObjectInEqualsMethodIsAllowed() {
         String code = "class A { public boolean equals(Object o) {return this == o;}}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void equalsMethodNotInInterface() {
         String code = "interface A { }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -410,9 +394,7 @@ public class TestBugFinder {
     @Test
     public void bitwiseOrOperator() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 | b==0) {} } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof BitwiseOperatorError);
     }
@@ -420,9 +402,7 @@ public class TestBugFinder {
     @Test
     public void bitwiseOperatorOnNumbers() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { int a = 1 | 2; } }";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -437,9 +417,7 @@ public class TestBugFinder {
     @Test
     public void ifWithOneStatementAndSiblingAllowed() {
         String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n System.out.println(\"Hello\"); }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -449,9 +427,7 @@ public class TestBugFinder {
                 "@NoEqualsMethod class A { public A(int a, int b) { " +
                 "if (a==b) System.out.println(\"Hello\"); \n" +
                 "System.out.println(\"Hello\"); }}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
@@ -504,9 +480,7 @@ public class TestBugFinder {
     @Test
     public void shouldIgnoreNoEqualsMethodWhenAbstractClass() {
         String code = "abstract class A {}";
-        CompilationUnit compilationUnit = StaticJavaParser.parse(code);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
