@@ -7,6 +7,7 @@ import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import filewriter.FileHandler;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.errors.BugReport;
 import master.thesis.backend.visitor.BugFinderVisitor;
@@ -15,6 +16,8 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
     public final static String PATH_FOR_DEPENDENCIES = "src/main/java/dependencies-for-analyse/";
+    public final static String PACKAGE_FOR_DEPENDENCIES = "dependencies-for-analyse";
+    private final FileHandler fileHandler = new FileHandler();
 
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
@@ -54,6 +57,6 @@ public class Analyser {
      * @param dependency Java code as string
      */
     public void addDependency(String dependency) {
-
+        fileHandler.createNewFileAndWrite(dependency);
     }
 }

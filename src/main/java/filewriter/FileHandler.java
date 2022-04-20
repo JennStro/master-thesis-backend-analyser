@@ -9,9 +9,9 @@ import java.io.IOException;
 public class FileHandler {
 
     public void createNewFileAndWrite(String code) {
-        String fileName = getClassName(simpleTokeniser(code));
+        String fileName = getClassName(code);
         try {
-            File file = new File(Analyser.PATH_FOR_DEPENDENCIES + fileName);
+            File file = new File(Analyser.PATH_FOR_DEPENDENCIES + fileName + ".java");
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(code);
             fileWriter.close();
@@ -25,7 +25,19 @@ public class FileHandler {
         return code.split(" ");
     }
 
-    private String getClassName(String[] tokens) {
+    private String[] addPackageDeclaration(String[] tokens) {
+        int LENGTH_OF_PACKAGE_DECLARATION = 2;
+        String[] tokensWithPackageDeclaration = new String[tokens.length + LENGTH_OF_PACKAGE_DECLARATION];
+        tokensWithPackageDeclaration[0] = "package";
+        tokensWithPackageDeclaration[1] = Analyser.PACKAGE_FOR_DEPENDENCIES;
+        for (int i = 0; i < tokens.length; i++) {
+            tokensWithPackageDeclaration[i+LENGTH_OF_PACKAGE_DECLARATION] = tokens[i];
+        }
+        return tokensWithPackageDeclaration;
+    }
+
+    public String getClassName(String code) {
+        String[] tokens = simpleTokeniser(code);
         for (int i = 0; i < tokens.length; i++) {
             if (tokens[i].equals("class")) {
                 return tokens[i+1];
