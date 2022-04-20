@@ -42,6 +42,9 @@ public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
     }
 
     public ArrayList<String> getAnnotationsForClass(String className) {
+        if (annotationsPerClass.get(className) == null) {
+            return new ArrayList<>();
+        }
         return annotationsPerClass.get(className);
     }
 }

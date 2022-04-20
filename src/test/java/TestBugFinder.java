@@ -139,21 +139,39 @@ public class TestBugFinder {
 
     @Test
     public void shouldNotGiveErrorWhenEqualsOperatorIsUsedOnPrimitive() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { boolean bo = a==b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "boolean bo = a==b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void shouldNotGiveErrorWhenEqualsOperatorIsUsedOnNull() {
-        String code = "@NoEqualsMethod class A { public A(Object a) { if (a == null) {} } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(Object a) { " +
+                        "if (a == null) {} " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
     public void shouldSuggestToUseEqualsMethodOnObjectsWhenUsingEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a==b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(Object a, Object b) { " +
+                        "boolean bo = a==b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
@@ -162,7 +180,13 @@ public class TestBugFinder {
 
     @Test
     public void shouldSuggestToUseNegatedEqualsMethodOnObjectsWhenUsingNegatedEqualsOperator() {
-        String code = "@NoEqualsMethod class A { public A(Object a, Object b) { boolean bo = a!=b; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                        "public A(Object a, Object b) { " +
+                            "boolean bo = a!=b; " +
+                        "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
@@ -292,37 +316,31 @@ public class TestBugFinder {
     }
 
     @Test
-    public void noEqualsMethodTestWithAnnotationTestClassWithInnerClass() {
-        String path = "src/test/java/FirstTestClass.java";
-        CompilationUnit compilationUnit = null;
-        try {
-            compilationUnit = StaticJavaParser.parse(new File(path));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+    public void shouldNotGiveErrorWhenAnnotationOnlyOuterClass() {
+        String code =
+                "@NoEqualsMethod" +
+                "public class OuterClass {" +
+                "    class InnerClass {" +
+                "    }" +
+                "}";
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertEquals("InnerClass", report.getBugs().get(0).getContainingClass());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof MissingEqualsMethodError);
     }
 
     @Test
-    public void ignoreEqualsInnerClass() {
-        String path = "src/test/java/IgnoreEqualsOnlyInnerClass.java";
-        CompilationUnit compilationUnit = null;
-        try {
-            compilationUnit = StaticJavaParser.parse(new File(path));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        AnalyserConfiguration adapter = new AnnotationsAdapter(compilationUnit);
-        BugFinderVisitor visitor = new BugFinderVisitor(adapter);
-        visitor.visit(compilationUnit, null);
-        BugReport report = visitor.getReport();
+    public void shouldNotGiveErrorWhenAnnotationOnlyInnerClass() {
+        String code =
+                "public class OuterClass {" +
+                    "@NoEqualsMethod" +
+                    "class InnerClass {" +
+                "    }" +
+                "}";
+        BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
-        Assertions.assertEquals("IgnoreEqualsOnlyInnerClass", error.getContainingClass());
+        Assertions.assertEquals("OuterClass", error.getContainingClass());
         Assertions.assertEquals("to add the method @Override public boolean equals(Object o) { // Checks to decide if two objects are equal goes here }", error.getSuggestion().get());
     }
 
