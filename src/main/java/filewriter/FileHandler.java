@@ -25,15 +25,16 @@ public class FileHandler {
         return code.split(" ");
     }
 
-    private String[] addPackageDeclaration(String[] tokens) {
-        int LENGTH_OF_PACKAGE_DECLARATION = 2;
-        String[] tokensWithPackageDeclaration = new String[tokens.length + LENGTH_OF_PACKAGE_DECLARATION];
-        tokensWithPackageDeclaration[0] = "package";
-        tokensWithPackageDeclaration[1] = Analyser.PACKAGE_FOR_DEPENDENCIES;
+    public String addPackageDeclaration(String code) {
+        String[] tokens = simpleTokeniser(code);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("package ");
+        stringBuilder.append(Analyser.PACKAGE_FOR_DEPENDENCIES);
+        stringBuilder.append("; ");
         for (int i = 0; i < tokens.length; i++) {
-            tokensWithPackageDeclaration[i+LENGTH_OF_PACKAGE_DECLARATION] = tokens[i];
+            stringBuilder.append(tokens[i]).append(" ");
         }
-        return tokensWithPackageDeclaration;
+        return stringBuilder.toString();
     }
 
     public String getClassName(String code) {

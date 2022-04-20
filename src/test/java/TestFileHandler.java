@@ -10,4 +10,9 @@ public class TestFileHandler {
     public void shouldReturnClassNameOfFile() {
         Assertions.assertEquals("B", fileHandler.getClassName("class B {}"));
     }
+
+    @Test
+    public void shouldAddPackageDeclarationToClass() {
+        Assertions.assertEquals("package dependencies-for-analyse; class B {} ", fileHandler.addPackageDeclaration("class B {}"));
+    }
 }
