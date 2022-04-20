@@ -16,8 +16,7 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
 
-    private static final String projectFolder = System.getProperty("user.dir");
-    public final static String PATH_FOR_DEPENDENCIES = projectFolder + "/src/main/java/dependenciesForAnalysis";
+    public final static String PATH_FOR_DEPENDENCIES = "src/main/resources";
     public final static String FILE_PATH_FOR_DEPENDENCIES = PATH_FOR_DEPENDENCIES + "/";
     private final FileHandler dependencyHandler = new FileHandler();
 
