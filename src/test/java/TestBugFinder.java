@@ -340,7 +340,7 @@ public class TestBugFinder {
     }
 
     @Test
-    public void useEqualsOperatorClass() {
+    public void shouldGiveEqualsOperatorError() {
         String path = "src/test/java/EqualsOperatorClass.java";
         CompilationUnit compilationUnit = null;
         try {
@@ -359,22 +359,31 @@ public class TestBugFinder {
     }
 
     @Test
-    public void equalsOperatorOnObjectInEqualsMethodIsAllowed() {
-        String code = "class A { public boolean equals(Object o) {return this == o;}}";
+    public void shouldNotGiveEqualsOperatorErrorWhenInEqualsMethod() {
+        String code =
+                "class A { " +
+                    "public boolean equals(Object o) {" +
+                        "return this == o;" +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void equalsMethodNotInInterface() {
+    public void shouldNotGiveEqualsMethodWhenInterface() {
         String code = "interface A { }";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void syntaxErrorTest() {
-        String code = "@NoEqualsMethod class A public void method(B b) {} }";
+    public void shouldGiveSyntaxErrorWhenMissingBrackets() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A " +
+                    "public void method(B b) {} " +
+                "}";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
@@ -382,30 +391,43 @@ public class TestBugFinder {
     }
 
     @Test
-    public void integerDivisionTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if(a/b==1.4) {System.out.println(\"Success\");}} }";
-        Analyser analyser = new Analyser();
-        BugReport report = analyser.analyse(code);
-        Assertions.assertFalse(report.getBugs().isEmpty());
-    }
-
-    @Test
-    public void integerDivisionCastingTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if((double)a/(double)b==1.4) {System.out.println(\"Success\");}} }";
-        Analyser analyser = new Analyser();
-        BugReport report = analyser.analyse(code);
-        Assertions.assertTrue(report.getBugs().isEmpty());
-    }
-
-    @Test
-    public void integerDivisionSuggestionTest() {
-        String code = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; if(a/b==1.4) {System.out.println(\"Success\");}} }";
+    public void shouldGiveErrorWhenIntegerDivision() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "int a = 7; " +
+                        "int b = 5; " +
+                        "if(a/b==1.4) {" +
+                            "System.out.println(\"Success\");" +
+                        "}" +
+                    "} " +
+                "}";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         BaseError error = report.getBugs().get(0);
+        Assertions.assertTrue(error instanceof IntegerDivisionError);
         Assertions.assertEquals("(double)a/(double)b", error.getSuggestion().get());
         Assertions.assertEquals("A", error.getContainingClass());
+    }
+
+    @Test
+    public void shouldNotGiveIntegerDivisionErrorWhenCasting() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method() {" +
+                        "int a = 7; " +
+                        "int b = 5; " +
+                        "if((double)a/(double)b==1.4) {" +
+                            "System.out.println(\"Success\");" +
+                        "}" +
+                    "} " +
+                "}";
+        Analyser analyser = new Analyser();
+        BugReport report = analyser.analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
