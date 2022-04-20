@@ -15,8 +15,8 @@ import master.thesis.backend.visitor.BugFinderVisitor;
 public class Analyser {
 
     private AnalyserConfiguration configuration;
-    public final static String PATH_FOR_DEPENDENCIES = "src/main/java/dependencies-for-analyse/";
-    public final static String PACKAGE_FOR_DEPENDENCIES = "dependencies-for-analyse";
+    public final static String PATH_FOR_DEPENDENCIES = "src/main/java/dependenciesForAnalysis/";
+    public final static String PACKAGE_FOR_DEPENDENCIES = "dependenciesForAnalysis";
     private final FileHandler fileHandler = new FileHandler();
 
     public BugReport analyse(String code) {

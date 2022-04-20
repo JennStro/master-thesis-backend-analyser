@@ -13,12 +13,12 @@ public class TestFileHandler {
 
     @Test
     public void shouldAddPackageDeclarationToClass() {
-        Assertions.assertEquals("package dependencies-for-analyse; class B {} ", fileHandler.addPackageDeclaration("class B {}"));
+        Assertions.assertEquals("package dependenciesForAnalysis; class B {} ", fileHandler.addPackageDeclaration("class B {}"));
     }
 
     @Test
     public void shouldReplacePackageDeclaration() {
-        Assertions.assertEquals("package dependencies-for-analyse; class B {} ",
+        Assertions.assertEquals("package dependenciesForAnalysis; class B {} ",
                 fileHandler.replacePackageDeclaration("package myPackage; class B {}"));
     }
 }
