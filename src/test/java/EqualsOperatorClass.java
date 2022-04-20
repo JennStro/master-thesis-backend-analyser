@@ -1,4 +1,4 @@
-import master.thesis.backend.annotations.NoEqualsMethod;
+import annotations.NoEqualsMethod;
 
 @NoEqualsMethod
 public class EqualsOperatorClass {
