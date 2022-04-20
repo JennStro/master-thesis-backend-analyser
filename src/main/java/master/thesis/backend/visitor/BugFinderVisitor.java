@@ -205,15 +205,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
         report.setClassName(declaration.getNameAsString());
 
         boolean classHasEqualsMethod = false;
-        boolean shouldIgnoreNoEqualsMethodError = false;
 
         for (Node child : children) {
-
-            if (child instanceof MarkerAnnotationExpr) {
-                if (child.toString().equals("@NoEqualsMethod")) {
-                    shouldIgnoreNoEqualsMethodError = true;
-                }
-            }
             if (child instanceof MethodDeclaration) {
                 MethodDeclaration equalsMethodCandidate = (MethodDeclaration) child;
                 if (equalsMethodCandidate.getNameAsString().equals("equals")) {
@@ -221,10 +214,12 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
-        if (!classHasEqualsMethod && !shouldIgnoreNoEqualsMethodError && !declaration.isInterface() && !declaration.isAbstract()) {
-            MissingEqualsMethodError error = new MissingEqualsMethodError();
-            error.setContainingClass(declaration.getNameAsString());
-            report.addBug(error);
+        if (!classHasEqualsMethod && !declaration.isInterface() && !declaration.isAbstract()) {
+            MissingEqualsMethodError missingEqualsMethodError = new MissingEqualsMethodError();
+            missingEqualsMethodError.setContainingClass(declaration.getNameAsString());
+            if (shouldBeAddedToReport(missingEqualsMethodError)) {
+                report.addBug(missingEqualsMethodError);
+            }
         }
 
     }

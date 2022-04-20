@@ -1,15 +1,10 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.analyser.Analyser;
 import master.thesis.backend.analyser.AnalyserConfiguration;
 import master.thesis.backend.errors.*;
-import master.thesis.backend.visitor.AnnotationVisitor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import master.thesis.backend.visitor.BugFinderVisitor;
 
