@@ -313,7 +313,7 @@ public class TestBugFinder {
     @Test
     public void shouldNotGiveErrorWhenAnnotationOnlyOuterClass() {
         String code =
-                "@NoEqualsMethod" +
+                "@NoEqualsMethod " +
                 "public class OuterClass {" +
                 "    class InnerClass {" +
                 "    }" +
@@ -328,9 +328,9 @@ public class TestBugFinder {
     public void shouldNotGiveErrorWhenAnnotationOnlyInnerClass() {
         String code =
                 "public class OuterClass {" +
-                    "@NoEqualsMethod" +
-                    "class InnerClass {" +
-                "    }" +
+                    "@NoEqualsMethod "+
+                "    class InnerClass {" +
+                " }" +
                 "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
