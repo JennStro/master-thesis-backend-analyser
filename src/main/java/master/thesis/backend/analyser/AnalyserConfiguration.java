@@ -8,11 +8,9 @@ public interface AnalyserConfiguration {
 
     /**
      *
-     * @return The errors the analyser should ignore.
+     * @return The errors the analyser should ignore for the chosen class.
      * The list contains the name of the error when calling {@link BaseError#getName()}.
      */
-    ArrayList<String> getErrorsToIgnore();
-
     ArrayList<String> getErrorsToIgnoreForClass(String className);
 
 }

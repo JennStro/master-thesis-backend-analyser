@@ -24,24 +24,6 @@ public class AnnotationsAdapter implements AnalyserConfiguration {
         visitor.visit(compilationUnit, null);
     }
 
-    public ArrayList<String> getErrorsToIgnoreAsName(ArrayList<String> annotations) {
-        ArrayList<String> errorsToIgnore = new ArrayList<>();
-        for (String annotation : annotations) {
-            errorsToIgnore.add(fromAnnotationToName.get(annotation));
-        }
-        return errorsToIgnore;
-    }
-
-    @Override
-    public ArrayList<String> getErrorsToIgnore() {
-        ArrayList<String> errorsToIgnore = new ArrayList<>();
-        ArrayList<String> annotations = visitor.getAnnotations();
-        for (String annotation : annotations) {
-            errorsToIgnore.add(fromAnnotationToName.get(annotation));
-        }
-        return errorsToIgnore;
-    }
-
     @Override
     public ArrayList<String> getErrorsToIgnoreForClass(String className) {
         ArrayList<String> errorsToIgnore = new ArrayList<>();
