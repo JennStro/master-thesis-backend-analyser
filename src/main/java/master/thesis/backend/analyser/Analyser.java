@@ -17,9 +17,8 @@ public class Analyser {
     private AnalyserConfiguration configuration;
 
     public final static String PATH_FOR_DEPENDENCIES = "src/main/java/dependenciesForAnalysis";
-    public final static String PACKAGE_FOR_DEPENDENCIES = "dependenciesForAnalysis";
     public final static String FILE_PATH_FOR_DEPENDENCIES = PATH_FOR_DEPENDENCIES + "/";
-    private final FileHandler fileHandler = new FileHandler();
+    private final FileHandler dependencyHandler = new FileHandler();
 
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
@@ -35,10 +34,12 @@ public class Analyser {
             }
             BugFinderVisitor visitor = new BugFinderVisitor(configuration);
             visitor.visit(compilationUnit, null);
+            dependencyHandler.deleteFiles();
             return visitor.getReport();
         } catch (Throwable e) {
             BugReport report = new BugReport();
             report.attach(e);
+            dependencyHandler.deleteFiles();
             return report;
         }
     }
@@ -59,6 +60,6 @@ public class Analyser {
      * @param dependency Java code as string
      */
     public void addDependency(String dependency) {
-        fileHandler.createNewFileAndWrite(dependency);
+        dependencyHandler.createNewFileAndWrite(dependency);
     }
 }
