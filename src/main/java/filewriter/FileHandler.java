@@ -10,11 +10,10 @@ public class FileHandler {
 
     public void createNewFileAndWrite(String code) {
         String fileName = getClassName(code);
-        String codeWithPackageDeclaration = replacePackageDeclaration(code);
         try {
             File file = new File(Analyser.FILE_PATH_FOR_DEPENDENCIES + fileName + ".java");
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(codeWithPackageDeclaration);
+            fileWriter.write(code);
             fileWriter.close();
         } catch (IOException e) {
             System.out.println("Uh oh could not read file");

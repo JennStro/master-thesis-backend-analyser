@@ -683,6 +683,8 @@ public class TestBugFinder {
         analyser.addDependency(dependency);
         BugReport report = analyser.analyse(code);
         Assertions.assertTrue(report.getException().isEmpty());
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
     }
 
 }

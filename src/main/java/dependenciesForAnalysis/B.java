@@ -1,1 +1,1 @@
-package dependenciesForAnalysis; class B {} 
+class B {}
