@@ -18,9 +18,8 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
 
-    public final static String pwd = Path.of("").toAbsolutePath().toString();
-    public final static String PATH_FOR_DEPENDENCIES = pwd + "/src/main/java/dependenciesForAnalysis";
-    public final static String FILE_PATH_FOR_DEPENDENCIES = PATH_FOR_DEPENDENCIES + "/";
+    public final static String PATH_FOR_DEPENDENCIES = "";
+    public final static String FILE_PATH_FOR_DEPENDENCIES = PATH_FOR_DEPENDENCIES + "";
     private final FileHandler dependencyHandler = new FileHandler();
 
     public BugReport analyse(String code) {
