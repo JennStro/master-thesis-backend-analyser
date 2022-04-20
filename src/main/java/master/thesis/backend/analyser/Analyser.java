@@ -3,7 +3,9 @@ package master.thesis.backend.analyser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.errors.BugReport;
@@ -12,10 +14,13 @@ import master.thesis.backend.visitor.BugFinderVisitor;
 public class Analyser {
 
     private AnalyserConfiguration configuration;
+    public final static String PATH_FOR_DEPENDENCIES = "src/main/java/dependencies-for-analyse/";
 
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+        TypeSolver context = new JavaParserTypeSolver(PATH_FOR_DEPENDENCIES);
         combinedTypeSolver.add(new ReflectionTypeSolver());
+        combinedTypeSolver.add(context);
         StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
 
         try {
@@ -42,5 +47,13 @@ public class Analyser {
      */
     public void setConfiguration(AnalyserConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    /**
+     *
+     * @param dependency Java code as string
+     */
+    public void addDependency(String dependency) {
+
     }
 }
