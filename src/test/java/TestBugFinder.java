@@ -431,7 +431,7 @@ public class TestBugFinder {
     }
 
     @Test
-    public void notAddErrorIfInPrintStatement() {
+    public void shouldNotGiveErrorWhenInPrintStatement() {
         String codeIntegerDivision = "@NoEqualsMethod class A { public void method() {int a = 7; int b = 5; System.out.println(a/b);} }";
         Analyser analyser = new Analyser();
         BugReport reportIntegerDivision  = analyser.analyse(codeIntegerDivision);
@@ -443,22 +443,42 @@ public class TestBugFinder {
     }
 
     @Test
-    public void allowIfOnSameLine() {
-        String code = "@NoEqualsMethod class A { public String method(boolean b) { if (b) return \"b is true\"; } }";
+    public void shouldNotGiveErrorWhenIfWithoutBracketsBodyIsOnSameLine() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public String method(boolean b) { " +
+                        "if (b) return \"b is true\"; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void allowIfOnSameLineOnlyOneStatement() {
-        String code = "@NoEqualsMethod class A { public void method(boolean b, ArrayList<Integer> lst) { if (b) lst.add(1); lst.add(2); } }";
+    public void shouldNotGiveErrorWhenOnlyOneStatementInIfWithoutBracket() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public void method(boolean b, ArrayList<Integer> lst) { " +
+                        "if (b) \n\t" +
+                            "lst.add(1); " +
+                        "} " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
-        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void arrayEquals() {
-        String code = "@NoEqualsMethod class A { public boolean method(int[] a, int[] b) { return a==b; } }";
+    public void shouldGiveSpecialSuggestionForArrayEquals() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public boolean method(int[] a, int[] b) { " +
+                        "return a==b; " +
+                    "} " +
+                "}";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -468,49 +488,87 @@ public class TestBugFinder {
     }
 
     @Test
-    public void bitwiseAndOperator() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 & b==0) {} } }";
+    public void shouldGiveErrorWhenBitwiseAndOperatorIsUsed() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if(a==0 & b==0) {} " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof BitwiseOperatorError);
     }
 
     @Test
-    public void bitwiseOrOperator() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { if(a==0 | b==0) {} } }";
+    public void shouldGiveErrorWhenBitwiseOrOperatorIsUsed() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if(a==0 | b==0) {} " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof BitwiseOperatorError);
     }
 
     @Test
-    public void bitwiseOperatorOnNumbers() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { int a = 1 | 2; } }";
+    public void shouldNotGivErrorWhenBitwiseOperatorOnNumbers() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "int a = 1 | 2; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void ifWithTwoStatementsWithSameIndentationNotAllowed() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n \t System.out.println(\"Hello\"); }}";
+    public void shouldGiveErrorWhenIfWithTwoStatementsWithSameIndentation() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b) \n \t " +
+                            "System.out.println(\"Hello\"); \n \t " +
+                            "System.out.println(\"Hello\"); " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
         Assertions.assertTrue(report.getBugs().get(0) instanceof IfWithoutBracketsError);
     }
 
     @Test
-    public void ifWithOneStatementAndSiblingAllowed() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) \n \t System.out.println(\"Hello\"); \n System.out.println(\"Hello\"); }}";
+    public void shouldNotGiveIfWithoutBracketsErrorWhenSiblingIsNotIndented() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b) \n \t " +
+                            "System.out.println(\"Hello\"); \n " +
+                        "System.out.println(\"Hello\"); " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
     @Test
-    public void ifWithOneStatementOnSameLineAndSiblingAllowed() {
+    public void shouldNotGiveErrorWhenSiblingNotIndentedAndBodyOnSameLineAsIfStatement() {
         String code =
-                "@NoEqualsMethod class A { public A(int a, int b) { " +
-                "if (a==b) System.out.println(\"Hello\"); \n" +
-                "System.out.println(\"Hello\"); }}";
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b) System.out.println(\"Hello\"); \n" +
+                        "System.out.println(\"Hello\"); " +
+                    "}" +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
@@ -545,7 +603,13 @@ public class TestBugFinder {
 
     @Test
     public void shouldGiveErrorWhenSiblingOfIfIsOnSameLine() {
-        String code = "@NoEqualsMethod class A { public A(int a, int b) { if (a==b) a=b; b=a; } }";
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "if (a==b) a=b; b=a; " +
+                    "} " +
+                "}";
         Analyser analyser = new Analyser();
         BugReport report = analyser.analyse(code);
         Assertions.assertFalse(report.getBugs().isEmpty());
@@ -567,8 +631,15 @@ public class TestBugFinder {
     }
 
     @Test
-    public void equalsOperatorOnObjectAnnotation() {
-        String code = "@NoEqualsMethod @EqualsOperatorOnObjectAllowed class A { public A(Object a, Object b) { boolean bo = a==b; } }";
+    public void shouldNotGiveEqualsOperatorErrorWhenAnnotation() {
+        String code =
+                "@NoEqualsMethod " +
+                "@EqualsOperatorOnObjectAllowed " +
+                "class A { " +
+                    "public A(Object a, Object b) { " +
+                        "boolean bo = a==b; " +
+                    "} " +
+                "}";
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
