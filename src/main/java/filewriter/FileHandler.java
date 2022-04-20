@@ -12,7 +12,7 @@ public class FileHandler {
         String fileName = getClassName(code);
         String codeWithPackageDeclaration = replacePackageDeclaration(code);
         try {
-            File file = new File(Analyser.PATH_FOR_DEPENDENCIES + fileName + ".java");
+            File file = new File(Analyser.FILE_PATH_FOR_DEPENDENCIES + fileName + ".java");
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(codeWithPackageDeclaration);
             fileWriter.close();

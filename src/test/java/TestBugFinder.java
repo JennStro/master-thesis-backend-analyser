@@ -668,7 +668,7 @@ public class TestBugFinder {
     @Test
     public void shouldResolveOneDependency() {
         String code =
-                "@NoEqualsMethod" +
+                "@NoEqualsMethod " +
                 "class A { " +
                     "B someField; " +
                     "public B getB() {" +
