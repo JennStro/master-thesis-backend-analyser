@@ -1,3 +1,6 @@
+### :bug: 4.2.2   
+Bug: Fix path issue when resolving dependencies.
+
 ### :toolbox: 4.2.1   
 New feature: Can add dependency to analysed file as string.
 
