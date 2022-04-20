@@ -1,3 +1,6 @@
+### :bug: 4.1.1
+Bug: Fix NPE when no annotation for a class.
+
 ### :star: 4.1.0 
 New feature: ```AnalyserConfiguration``` can be implemented and set in `Analyser`. 
 Default configuration is ``AnnotationsAdapter``.
