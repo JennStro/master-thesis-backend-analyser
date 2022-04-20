@@ -1,3 +1,6 @@
+### :toolbox: 4.2.1   
+New feature: Can add dependency to analysed file as string.
+
 ### :bug: 4.1.1
 Bug: Fix NPE when no annotation for a class.
 
