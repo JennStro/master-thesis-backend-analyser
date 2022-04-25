@@ -56,7 +56,7 @@ class YourClass {
 
 ## Settings 
 
-The errors can be ignored by adding annotations to the file that is being analysed. 
+The errors can be ignored by adding annotations from https://github.com/JennStro/master-thesis-disable-warnings-annotations.
 
 **Equals operator on objects:**
 ```
