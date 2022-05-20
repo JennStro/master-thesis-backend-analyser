@@ -1,3 +1,6 @@
+### :bug: 4.2.3 
+Bug: Create new folder for dependencies for analysis.
+
 ### :bug: 4.2.2   
 Bug: Fix path issue when resolving dependencies.
 

@@ -20,7 +20,7 @@ Maven: Add in your `pom.xml` file:
 <dependency>
   <groupId>master.thesis.backend.analyser</groupId>
   <artifactId>master-thesis-backend-analyser</artifactId>
-  <version>LATEST_VERSION</version>
+  <version>4.2.3</version>
 </dependency>
 ```
 
