@@ -24,13 +24,39 @@ Maven: Add in your `pom.xml` file:
 </dependency>
 ```
 
+### Usage 
+
+```
+class YourClass {
+    
+    public static void main(String[] args) {
+        String codeToAnalyse = 
+        "@NoEqualsMethod "+
+        "class A {" +
+            "boolean someBool = B.someValue & C.someValue;" +
+        "}";
+        
+        String B = "class B { public boolean someValue = false; }";
+        
+        String C = "class C { public boolean someValue = false; }";
+        
+        Analyser analyser = new Analyser();
+        analyser.addDependency(B);
+        analyser.addDependency(C);
+        
+        BugReport report = analyser.analyse(codeToAnalyse);
+        System.out.println(report.getBugs().get(0));
+    }
+}
+```
+
 ## Architecture 
 
 ![arcitecture](https://user-images.githubusercontent.com/48728008/151001283-69cd144b-766d-4972-97be-93d5a03f28a8.png)
 
 ## Settings 
 
-The errors can be ignored by adding annotations to the file that is being analysed. 
+The errors can be ignored by adding annotations from https://github.com/JennStro/master-thesis-disable-warnings-annotations.
 
 **Equals operator on objects:**
 ```
