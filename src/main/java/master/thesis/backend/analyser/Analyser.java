@@ -12,8 +12,6 @@ import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.errors.BugReport;
 import master.thesis.backend.visitor.BugFinderVisitor;
 
-import java.nio.file.Path;
-
 public class Analyser {
 
     private AnalyserConfiguration configuration;
@@ -62,6 +60,6 @@ public class Analyser {
      * @param dependency Java code as string
      */
     public void addDependency(String dependency) {
-        dependencyHandler.createNewFileAndWrite(dependency);
+        dependencyHandler.createNewFileAndWrite(dependency, FILE_PATH_FOR_DEPENDENCIES);
     }
 }

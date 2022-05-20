@@ -1,7 +1,5 @@
 package filewriter;
 
-import master.thesis.backend.analyser.Analyser;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,16 +9,16 @@ public class FileHandler {
 
     private ArrayList<File> files = new ArrayList<>();
 
-    public void createNewFileAndWrite(String code) {
+    public void createNewFileAndWrite(String code, String path) {
         String fileName = getClassName(code);
         try {
-            File file = new File(Analyser.FILE_PATH_FOR_DEPENDENCIES + fileName + ".java");
+            File file = new File(path + fileName + ".java");
             files.add(file);
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(code);
             fileWriter.close();
         } catch (IOException e) {
-            System.out.println("Uh oh could not read file");
+            System.out.println("Could not create file");
             e.printStackTrace();
         }
     }
