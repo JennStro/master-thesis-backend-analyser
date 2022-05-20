@@ -1,14 +1,7 @@
 package master.thesis.backend.errors;
 import java.util.Optional;
 
-public class SemiColonAfterIfError extends BaseError {
-
-
-    private String condition;
-
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
+public class SemiColonAfterIfError extends IfStatementError {
 
     @Override
     public Optional<String> getSuggestion() {

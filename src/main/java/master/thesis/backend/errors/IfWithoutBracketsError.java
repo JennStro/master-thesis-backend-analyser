@@ -2,18 +2,7 @@ package master.thesis.backend.errors;
 
 import java.util.Optional;
 
-public class IfWithoutBracketsError extends BaseError {
-
-    private String condition;
-    private String thenBranch;
-
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
-
-    public void setThenBranch(String thenBranch) {
-        this.thenBranch = thenBranch;
-    }
+public class IfWithoutBracketsError extends IfStatementError {
 
     @Override
     public Optional<String> getSuggestion() {
