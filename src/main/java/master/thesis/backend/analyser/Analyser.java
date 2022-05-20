@@ -16,13 +16,11 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
 
-    public final static String PATH_FOR_DEPENDENCIES = "";
-    public final static String FILE_PATH_FOR_DEPENDENCIES = PATH_FOR_DEPENDENCIES + "";
     private final FileHandler dependencyHandler = new FileHandler();
 
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        TypeSolver context = new JavaParserTypeSolver(PATH_FOR_DEPENDENCIES);
+        TypeSolver context = new JavaParserTypeSolver(dependencyHandler.getDirectoryForDependencies());
         combinedTypeSolver.add(new ReflectionTypeSolver());
         combinedTypeSolver.add(context);
         StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
@@ -34,12 +32,12 @@ public class Analyser {
             }
             BugFinderVisitor visitor = new BugFinderVisitor(configuration);
             visitor.visit(compilationUnit, null);
-            dependencyHandler.deleteFiles();
+            dependencyHandler.deleteFilesInDependencyDirectory();
             return visitor.getReport();
         } catch (Throwable e) {
             BugReport report = new BugReport();
             report.attach(e);
-            dependencyHandler.deleteFiles();
+            dependencyHandler.deleteFilesInDependencyDirectory();
             return report;
         }
     }
@@ -60,6 +58,6 @@ public class Analyser {
      * @param dependency Java code as string
      */
     public void addDependency(String dependency) {
-        dependencyHandler.createNewFileAndWrite(dependency, FILE_PATH_FOR_DEPENDENCIES);
+        dependencyHandler.createNewFileAndWrite(dependency);
     }
 }

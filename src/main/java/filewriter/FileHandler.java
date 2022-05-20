@@ -8,11 +8,22 @@ import java.util.ArrayList;
 public class FileHandler {
 
     private ArrayList<File> files = new ArrayList<>();
+    private File directoryForDependencies;
 
-    public void createNewFileAndWrite(String code, String path) {
+    public FileHandler() {
+        String userDirectory = System.getProperty("user.dir");
+        directoryForDependencies = new File(userDirectory +"/directoryForDependencies");
+        directoryForDependencies.mkdirs();
+    }
+
+    public File getDirectoryForDependencies() {
+        return directoryForDependencies;
+    }
+
+    public void createNewFileAndWrite(String code) {
         String fileName = getClassName(code);
         try {
-            File file = new File(path + fileName + ".java");
+            File file = new File(directoryForDependencies.getAbsolutePath() + "/" + fileName + ".java");
             files.add(file);
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(code);
@@ -23,9 +34,9 @@ public class FileHandler {
         }
     }
 
-    public void deleteFiles() {
-        for (File file : this.files) {
-            System.out.println("Deleted file " + file.getName() + ": " + file.delete());
+    public void deleteFilesInDependencyDirectory() {
+        for (File file : files) {
+            System.out.println("Deleted: " + file.getAbsolutePath() + " " + file.delete());
         }
     }
 
@@ -42,5 +53,6 @@ public class FileHandler {
         }
         return "";
     }
+
 }
 
