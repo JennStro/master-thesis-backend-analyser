@@ -665,44 +665,4 @@ public class TestBugFinder {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
-    @Test
-    public void shouldResolveOneDependency() {
-        String code =
-                "@NoEqualsMethod " +
-                "class A { " +
-                    "B someField; " +
-                    "public B getB() {" +
-                        "return this.someField;" +
-                    "}" +
-                    "public void method() {" +
-                        "return getB() == getB();" +
-                    "}" +
-                "}";
-        String dependency = "class B {}";
-        Analyser analyser = new Analyser();
-        analyser.addDependency(dependency);
-        BugReport report = analyser.analyse(code);
-        Assertions.assertTrue(report.getException().isEmpty());
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        Assertions.assertTrue(report.getBugs().get(0) instanceof EqualsOperatorError);
-    }
-
-    @Test
-    public void shouldResolveTwoDependencies() {
-        String code =
-                "@NoEqualsMethod "+
-                "class A {" +
-                    "boolean someBool = B.someValue & C.someValue;" +
-                "}";
-        String B = "class B { public boolean someValue = false; }";
-        String C = "class C { public boolean someValue = false; }";
-        Analyser analyser = new Analyser();
-        analyser.addDependency(B);
-        analyser.addDependency(C);
-        BugReport report = analyser.analyse(code);
-        Assertions.assertTrue(report.getException().isEmpty());
-        Assertions.assertFalse(report.getBugs().isEmpty());
-        Assertions.assertTrue(report.getBugs().get(0) instanceof BitwiseOperatorError);
-    }
-
 }

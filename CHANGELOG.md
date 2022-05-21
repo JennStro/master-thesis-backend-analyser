@@ -1,3 +1,6 @@
+### :fire: 5.0.0
+Breaking: remove support for adding dependencies due to unstable featur
+
 ### :bug: 4.2.3 
 Bug: Create new folder for dependencies for analysis.
 

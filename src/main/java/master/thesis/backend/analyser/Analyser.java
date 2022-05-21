@@ -2,12 +2,8 @@ package master.thesis.backend.analyser;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import filewriter.FileHandler;
 import master.thesis.backend.adapter.AnnotationsAdapter;
 import master.thesis.backend.errors.BugReport;
 import master.thesis.backend.visitor.BugFinderVisitor;
@@ -16,14 +12,9 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
 
-    private final FileHandler dependencyHandler = new FileHandler();
-
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        TypeSolver context = new JavaParserTypeSolver(dependencyHandler.getDirectoryForDependencies());
         combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(context);
-        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
 
         try {
             CompilationUnit compilationUnit = StaticJavaParser.parse(code);
@@ -32,12 +23,10 @@ public class Analyser {
             }
             BugFinderVisitor visitor = new BugFinderVisitor(configuration);
             visitor.visit(compilationUnit, null);
-            dependencyHandler.deleteFilesInDependencyDirectory();
             return visitor.getReport();
         } catch (Throwable e) {
             BugReport report = new BugReport();
             report.attach(e);
-            dependencyHandler.deleteFilesInDependencyDirectory();
             return report;
         }
     }
@@ -53,11 +42,4 @@ public class Analyser {
         this.configuration = configuration;
     }
 
-    /**
-     *
-     * @param dependency Java code as string
-     */
-    public void addDependency(String dependency) {
-        dependencyHandler.createNewFileAndWrite(dependency);
-    }
 }
