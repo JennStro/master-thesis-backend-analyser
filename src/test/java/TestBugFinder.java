@@ -651,7 +651,7 @@ public class TestBugFinder {
                 "@IntegerDivisionAllowed " +
                 "class A { " +
                     "public A(int a, int b) { " +
-                        "int bo = a/b; " +
+                        "double bo = a/b; " +
                     "} " +
                 "}";
         BugReport report = new Analyser().analyse(code);
@@ -665,4 +665,31 @@ public class TestBugFinder {
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
 
+
+    @Test
+    public void shouldIgnoreErrorWithIntegerDivisionWhenExpectedInteger() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public A(int a, int b) { " +
+                        "int bo = a/b; " +
+                    "} " +
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void shouldGiveErrorWithIntegerDivisionInMethod() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public double m(int a, int b) { " +
+                        "return a/b; " +
+                    "} " +
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IntegerDivisionError);
+    }
 }

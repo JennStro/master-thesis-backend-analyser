@@ -4,6 +4,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -86,6 +87,8 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
+                        if (!isInVariableDeclarationDefinedAsInteger(expression)) {
+
                         IntegerDivisionError integerDivisionError = new IntegerDivisionError();
                         if (getContainingClass(expression).isPresent()) {
                             integerDivisionError.setContainingClass(getContainingClass(expression).get());
@@ -97,6 +100,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                         if (shouldBeAddedToReport(integerDivisionError)) {
                             report.addBug(integerDivisionError);
                         }
+                    }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -126,6 +130,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                 }
             }
         }
+    }
+
+    private boolean isInVariableDeclarationDefinedAsInteger(BinaryExpr expression) {
+        if (expression.getParentNode().isPresent()) {
+            if (expression.getParentNode().get().getParentNode().isPresent()) {
+                Node maybeVariableDeclarationExpr = expression.getParentNode().get().getParentNode().get();
+                if (maybeVariableDeclarationExpr.getMetaModel().is(VariableDeclarationExpr.class)) {
+                    VariableDeclarationExpr ancestor = (VariableDeclarationExpr) maybeVariableDeclarationExpr;
+                    return ancestor.calculateResolvedType().describe().equals("int");
+                }
+            }
+        }
+        return false;
     }
 
     private boolean equalsOperatorIsUsedIn(BinaryExpr expression) {

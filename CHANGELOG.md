@@ -1,3 +1,6 @@
+### :star: 5.1.0 
+Feature: Ignore integer division when in integer declaration.
+
 ### :fire: 5.0.0
 Breaking: remove support for adding dependencies due to unstable featur
 
