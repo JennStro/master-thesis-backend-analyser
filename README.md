@@ -20,7 +20,7 @@ Maven: Add in your `pom.xml` file:
 <dependency>
   <groupId>master.thesis.backend.analyser</groupId>
   <artifactId>master-thesis-backend-analyser</artifactId>
-  <version>4.2.3</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
@@ -33,16 +33,10 @@ class YourClass {
         String codeToAnalyse = 
         "@NoEqualsMethod "+
         "class A {" +
-            "boolean someBool = B.someValue & C.someValue;" +
+            "boolean someBool = true & false;" +
         "}";
         
-        String B = "class B { public boolean someValue = false; }";
-        
-        String C = "class C { public boolean someValue = false; }";
-        
         Analyser analyser = new Analyser();
-        analyser.addDependency(B);
-        analyser.addDependency(C);
         
         BugReport report = analyser.analyse(codeToAnalyse);
         System.out.println(report.getBugs().get(0));
