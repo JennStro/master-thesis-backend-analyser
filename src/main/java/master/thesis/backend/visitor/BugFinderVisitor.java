@@ -140,6 +140,10 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
                     VariableDeclarationExpr ancestor = (VariableDeclarationExpr) maybeVariableDeclarationExpr;
                     return ancestor.calculateResolvedType().describe().equals("int");
                 }
+                if (maybeVariableDeclarationExpr.getMetaModel().is(FieldDeclaration.class)) {
+                    FieldDeclaration ancestor = (FieldDeclaration) maybeVariableDeclarationExpr;
+                    return ancestor.getVariables().get(0).resolve().getType().describe().equals("int");
+                }
             }
         }
         return false;
