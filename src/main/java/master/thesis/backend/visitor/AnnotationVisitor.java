@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * A visitor to collect the annotations of the file to analyse.
+ */
 public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
 
     private ArrayList<String> annotations = new ArrayList<>();
@@ -20,6 +23,13 @@ public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
         annotations.add(annotationExpr.toString());
     }
 
+    /**
+     * Go through the children of the class to find annotations for this class.
+     *
+     * @param declaration the class to analyse
+     * @param arg
+     */
+    @Override
     public void visit(ClassOrInterfaceDeclaration declaration, Void arg) {
         super.visit(declaration, arg);
         List<Node> children = declaration.getChildNodes();
@@ -40,6 +50,11 @@ public class AnnotationVisitor extends VoidVisitorAdapter<Void> {
         return this.annotations;
     }
 
+    /**
+     *
+     * @param className
+     * @return the annotations for the given className
+     */
     public ArrayList<String> getAnnotationsForClass(String className) {
         if (annotationsPerClass.get(className) == null) {
             return new ArrayList<>();

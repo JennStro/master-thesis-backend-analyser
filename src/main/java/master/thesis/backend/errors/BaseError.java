@@ -2,6 +2,9 @@ package master.thesis.backend.errors;
 
 import java.util.Optional;
 
+/**
+ * The base error for all errors. All new errors should extend this class.
+ */
 public abstract class BaseError {
 
     private int lineNumber = -1;

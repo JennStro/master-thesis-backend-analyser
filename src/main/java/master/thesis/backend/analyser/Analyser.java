@@ -13,6 +13,17 @@ public class Analyser {
 
     private AnalyserConfiguration configuration;
 
+    /**
+     * Analyses the given code as string using {@link BugFinderVisitor}.
+     *
+     * If no {@link AnalyserConfiguration} is given, {@link AnnotationsAdapter} will be used to ignore errors.
+     * Only the types within the code to analyse will be resolved.
+     * If a type is not resolved, an exception will be added to {@link BugReport}.
+     * If the code has a parseerror, an exception will be added to {@link BugReport}.
+     *
+     * @param code to analyse as string
+     * @return the report of this analysis.
+     */
     public BugReport analyse(String code) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
         combinedTypeSolver.add(new ReflectionTypeSolver());

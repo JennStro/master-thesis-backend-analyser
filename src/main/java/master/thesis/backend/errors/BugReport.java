@@ -3,6 +3,11 @@ package master.thesis.backend.errors;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * The bugreport. Used by {@link master.thesis.backend.visitor.BugFinderVisitor} to collect bugs during analysis.
+ * If a parseerror or exception during analysis occurs, it will be attached to this report and available through
+ * {@link #getException()}.
+ */
 public class BugReport {
 
     private ArrayList<BaseError> bugs = new ArrayList<>();
@@ -21,6 +26,10 @@ public class BugReport {
         this.exceptionFromJavaParser = exceptionFromJavaParser;
     }
 
+    /**
+     *
+     * @return empty if no exception. The exception if attached during analysis or parsing.
+     */
     public Optional<Throwable> getException() {
         if (exceptionFromJavaParser == null) {
             return Optional.empty();
