@@ -703,4 +703,50 @@ public class TestBugFinder {
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
+
+    @Test
+    public void shouldIgnoreIntegerDivisionWhenCastingToDouble() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "int a = (double)5/3;"+
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void shouldHaveIntegerDivisionWhenDeclaringDoubleAsField() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "double a = 5/3;"+
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IntegerDivisionError);
+    }
+
+    @Test
+    public void shouldHaveIntegerDivisionWhenDeclaringDoubleAsFieldSeveralDivisions() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "double a = (5/3)/2;"+
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertFalse(report.getBugs().isEmpty());
+        Assertions.assertTrue(report.getBugs().get(0) instanceof IntegerDivisionError);
+    }
+
+    @Test
+    public void shouldIgnoreIntegerDivisionWhenDeclaringDoubleAsFieldSeveralDivisions() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "int a = (5/3)/2;"+
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
 }

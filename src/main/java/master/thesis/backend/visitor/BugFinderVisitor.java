@@ -87,20 +87,20 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
-                        if (!isInVariableDeclarationDefinedAsInteger(expression)) {
+                        if (!isInVariableDeclarationDefinedAsInteger(expression) && !isInFieldDeclarationDefinedAsInteger(expression)) {
 
-                        IntegerDivisionError integerDivisionError = new IntegerDivisionError();
-                        if (getContainingClass(expression).isPresent()) {
-                            integerDivisionError.setContainingClass(getContainingClass(expression).get());
+                            IntegerDivisionError integerDivisionError = new IntegerDivisionError();
+                            if (getContainingClass(expression).isPresent()) {
+                                integerDivisionError.setContainingClass(getContainingClass(expression).get());
+                            }
+                            int lineNumber = getLineNumberFrom(expression);
+                            integerDivisionError.setLineNumber(lineNumber);
+                            integerDivisionError.setLeftOperand(left.toString());
+                            integerDivisionError.setRightOperand(right.toString());
+                            if (shouldBeAddedToReport(integerDivisionError)) {
+                                report.addBug(integerDivisionError);
+                            }
                         }
-                        int lineNumber = getLineNumberFrom(expression);
-                        integerDivisionError.setLineNumber(lineNumber);
-                        integerDivisionError.setLeftOperand(left.toString());
-                        integerDivisionError.setRightOperand(right.toString());
-                        if (shouldBeAddedToReport(integerDivisionError)) {
-                            report.addBug(integerDivisionError);
-                        }
-                    }
                     }
                 } catch (UnsolvedSymbolException unsolvedSymbolException) {
                     report.attach(unsolvedSymbolException);
@@ -133,20 +133,13 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     }
 
     private boolean isInVariableDeclarationDefinedAsInteger(BinaryExpr expression) {
-        if (expression.getParentNode().isPresent()) {
-            if (expression.getParentNode().get().getParentNode().isPresent()) {
-                Node maybeVariableDeclarationExpr = expression.getParentNode().get().getParentNode().get();
-                if (maybeVariableDeclarationExpr.getMetaModel().is(VariableDeclarationExpr.class)) {
-                    VariableDeclarationExpr ancestor = (VariableDeclarationExpr) maybeVariableDeclarationExpr;
-                    return ancestor.calculateResolvedType().describe().equals("int");
-                }
-                if (maybeVariableDeclarationExpr.getMetaModel().is(FieldDeclaration.class)) {
-                    FieldDeclaration ancestor = (FieldDeclaration) maybeVariableDeclarationExpr;
-                    return ancestor.getVariables().get(0).resolve().getType().describe().equals("int");
-                }
-            }
-        }
-        return false;
+        Optional<VariableDeclarationExpr> maybeVariableDeclarationExpr = expression.findAncestor(VariableDeclarationExpr.class);
+        return maybeVariableDeclarationExpr.map(variableDeclarationExpr -> variableDeclarationExpr.calculateResolvedType().describe().equals("int")).orElse(false);
+    }
+
+    private boolean isInFieldDeclarationDefinedAsInteger(BinaryExpr expression) {
+        Optional<FieldDeclaration> maybeFieldDeclarationExpr = expression.findAncestor(FieldDeclaration.class);
+        return maybeFieldDeclarationExpr.map(fieldDeclaration -> fieldDeclaration.getVariables().get(0).resolve().getType().describe().equals("int")).orElse(false);
     }
 
     private boolean equalsOperatorIsUsedIn(BinaryExpr expression) {
