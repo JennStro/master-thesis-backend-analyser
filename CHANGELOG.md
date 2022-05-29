@@ -1,3 +1,6 @@
+### :bug: 5.1.1 
+Bug: Ignore integer division when expected int from field and method as well.
+
 ### :star: 5.1.0 
 Feature: Ignore integer division when in integer declaration.
 
