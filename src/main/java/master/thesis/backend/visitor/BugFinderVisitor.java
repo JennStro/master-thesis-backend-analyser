@@ -3,10 +3,7 @@ package master.thesis.backend.visitor;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -87,7 +84,7 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
             if (!isInsidePrintStatement(expression)) {
                 try {
                     if (left.calculateResolvedType().describe().equals("int") && right.calculateResolvedType().describe().equals("int")) {
-                        if (!isInVariableDeclarationDefinedAsInteger(expression) && !isInFieldDeclarationDefinedAsInteger(expression)) {
+                        if (!isInVariableDeclarationDefinedAsInteger(expression) && !isInFieldDeclarationDefinedAsInteger(expression) && !isReturningIntegerInMethodExpectingInteger(expression)) {
 
                             IntegerDivisionError integerDivisionError = new IntegerDivisionError();
                             if (getContainingClass(expression).isPresent()) {
@@ -140,6 +137,19 @@ public class BugFinderVisitor extends VoidVisitorAdapter<Void> {
     private boolean isInFieldDeclarationDefinedAsInteger(BinaryExpr expression) {
         Optional<FieldDeclaration> maybeFieldDeclarationExpr = expression.findAncestor(FieldDeclaration.class);
         return maybeFieldDeclarationExpr.map(fieldDeclaration -> fieldDeclaration.getVariables().get(0).resolve().getType().describe().equals("int")).orElse(false);
+    }
+
+    private boolean isReturningIntegerInMethodExpectingInteger(BinaryExpr expression) {
+        Optional<ReturnStmt> maybeReturnStmt = expression.findAncestor(ReturnStmt.class);
+        if (maybeReturnStmt.isPresent()) {
+            ReturnStmt returnStmt = maybeReturnStmt.get();
+            Optional<MethodDeclaration> maybeMethodDeclaration = returnStmt.findAncestor(MethodDeclaration.class);
+            if (maybeMethodDeclaration.isPresent()) {
+                MethodDeclaration methodDeclaration = maybeMethodDeclaration.get();
+                return methodDeclaration.getType().asString().equals("int");
+            }
+        }
+        return false;
     }
 
     private boolean equalsOperatorIsUsedIn(BinaryExpr expression) {

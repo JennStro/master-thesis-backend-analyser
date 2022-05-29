@@ -749,4 +749,31 @@ public class TestBugFinder {
         BugReport report = new Analyser().analyse(code);
         Assertions.assertTrue(report.getBugs().isEmpty());
     }
+
+    @Test
+    public void shouldIgnoreErrorWithIntegerDivisionInMethodReturningInt() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                    "public int m(int a, int b) { " +
+                        "return a/b; " +
+                    "} " +
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
+
+    @Test
+    public void shouldIgnoreErrorWithIntegerDivisionInMethodNotReturningIntegerDivision() {
+        String code =
+                "@NoEqualsMethod " +
+                "class A { " +
+                "public double m(int a, int b) { " +
+                    "int c = a/c;"+
+                    "return c; " +
+                "} " +
+                "}";
+        BugReport report = new Analyser().analyse(code);
+        Assertions.assertTrue(report.getBugs().isEmpty());
+    }
 }
